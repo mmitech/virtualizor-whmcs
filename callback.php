@@ -39,10 +39,6 @@ $acts = $_POST['act'];
 $vpsid = (int) $_POST['vpsid'];
 $extra = $_POST['data'];
 
-if(!empty($extra)){
-	$extra_var = unserialize(base64_decode($extra));
-}
-
 $is_valid_ip = false;
 if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
     $tmp_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -72,6 +68,10 @@ if(!in_array($hash, $hash_key)){
 // Is it a valid
 if(empty($vpsid) && $vpsid < 1){
 	virt_callback_die('<error>ERROR: Invalid VPSID</error>');
+}
+
+if(!empty($extra)){
+	$extra_var = unserialize(base64_decode($extra), ['allowed_classes' => false]);
 }
 
 //=====================

@@ -41,7 +41,7 @@ class Virtualizor_Enduser_API {
 	 * @param        int $port (Optional) The port to connect to. Port 4083 is the default. 4082 is non-SSL
 	 * @return       NULL
 	 */
-	function __construct($ip, $key, $pass, $port = 4083, $is_admin = false){
+	public function __construct($ip, $key, $pass, $port = 4083, $is_admin = false){
 		$this->key = $key;
 		$this->pass = $pass;
 		$this->ip = $ip;

@@ -205,9 +205,9 @@
 									<div class="col-xl-4 col-4 mb-3 vps-info-icons text-center" tooltip="{{vm_tip_startstop}}" id="startstopcell"></div>
 									<div class="col-xl-4 col-4 mb-3 vps-info-icons text-center" tooltip="{{vm_tip_restart}}" id="restartcell"></div>
 									<div class="col-xl-4 col-4 mb-3 vps-info-icons text-center" tooltip="{{vm_tip_poweroff}}" id="poweroffcell"></div>
-									<div class="col-xl-4 col-4 vps-info-icons text-center" tooltip="{{vm_tip_ssh}}" id="ssh">
+									<!--<div class="col-xl-4 col-4 vps-info-icons text-center" tooltip="{{vm_tip_ssh}}" id="ssh">
 										<a onclick="show_ssh_window(1)"><i class="fa fa-terminal" aria-hidden="true"></i></a>
-									</div>
+									</div>-->
 									<div class="col-xl-4 col-4 vps-info-icons text-center" tooltip="{{vm_tip_vnc}}" id="vnc">
 										<a onclick="show_vnc_window(1)"><img src="[[images]]vnc.png" alt="VNC"></a>								
 									</div>
@@ -250,7 +250,7 @@
 								<a class="nav-link mr-2 mr-md-0" id="backups-cell" data-toggle="pill" onclick="show_backup2_window();" href="#backups-cell-tab" role="tab" aria-controls="backups-cell-tab" aria-selected="false"><i class="fas fa-database mx-1"></i>{{bkup2_page_head}}</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link mr-2 mr-md-0" id="rdns-cell" data-toggle="pill" onclick="vpsrdns_show(1);" href="#rdns-cell-tab" role="tab" aria-controls="rdns-cell-tab" aria-selected="false"><i class="fas fa-globe mx-1"></i>{{lm_rdns}}</a>
+								<a class="nav-link mr-2 mr-md-0" id="rdns-cell" data-toggle="pill" onclick="javascript:loadpage('act=rdns');" href="#rdns-cell-tab" role="tab" aria-controls="rdns-cell-tab" aria-selected="false"><i class="fas fa-globe mx-1"></i>{{lm_rdns}}</a>
 							</li>				
 						</ul>
 						<div class="tab-content" id="pills-tabContent">
@@ -876,6 +876,7 @@
 															<div class="form-group">
 																<label class="form-label">{{hvm_boot_order}}</label>
 																<div id="boot_reorder_pos"></div>
+																<input type="hidden" value="" name="boot_ord_val" id="boot_reorder_pos_val" />
 															</div>
 														</div>
 														<div class="col-md-6" id="rtc_tr" style="display: none;">
@@ -1568,37 +1569,6 @@
 									<input type="hidden" name="date" id="date_bkup2" />
 									<input type="hidden" name="file" id="file_bkup2" />
 								</form>	
-							</div>
-							<div class="tab-pane fade" id="rdns-cell-tab" role="tabpanel" aria-labelledby="rdns-cell">
-								<div id="vpsrdns_div">
-									<form class="form-horizontal" accept-charset="UTF-8" action="act=rdns" method="post" id="vpsrdnsform" onsubmit="return submitit(this, 'vpsrdns_show_response');">
-										
-										<div class="row">
-											<div class="col-md-6">
-												<div class="form-group">
-													<label for="vpsrdns_ip" class="form-label mr-1 d-inline-block">{{rdns_rdns_ip}}</label>
-													<span class="info-text" tooltip="{{rdns_exp_rdns_ip}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span><br>
-													<select class="form-control" name="rdns_ip" id="vpsrdns_ip"></select>
-												</div>
-											</div>
-											<div class="col-md-6">
-												<div class="form-group">
-													<label for="vpsrdns_domain" class="form-label mr-1 d-inline-block">{{rdns_rdns_domain}}</label>
-													<span class="info-text" tooltip="{{rdns_exp_rdns_domain}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span><br>
-													<input class="form-control" type="text" name="rdns_domain" size="30" id="vpsrdns_domain">
-												</div>
-											</div>
-										</div>
-
-										<input type="hidden" name="rdns" value="1" />
-										<button type="submit" name="vpsrdns_submit" class="blue_btn" >{{rdns_page_head}}</button>
-									</form>
-								</div>
-								<h4 class="mt-4">
-									<i class="fas fa-cogs"></i>
-									<span class="h3">{{rdns_rdns_existing}}</span>
-								</h4>	
-								<div id="vpsrdnslist"></div>
 							</div>
 						</div>
 					</div>		
@@ -2959,9 +2929,11 @@
 					<div class="tab-content" id="nav-tabContent">
 						<div class="tab-pane fade  show active mb-5" id="records-rdns" role="tabpanel" aria-labelledby="records-rdns-tab">
 							<div class="notice" style="display:none;" id="no_rdns">{{no_rdns}}</div>
+							<div class="pagination-top"></div>
 							<div class="scrollbar-virt">
 								<div id="rdnslist"></div>
 							</div>
+							<div class="pagination-bottom"></div>
 							<div class="clearfix"></div>										
 						</div>
 						<div class="tab-pane fade mb-5" id="add-rdns" role="tabpanel" aria-labelledby="add-rdns-tab">

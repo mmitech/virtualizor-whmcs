@@ -1,7 +1,7 @@
 <?php
 
-// Last Updated : 16/12/2022
-// Version : 2.6.4
+// Last Updated : 02/01/2024
+// Version : 2.7.1
 
 // Disable warning messages - in PHP 5.4
 //error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
@@ -11,6 +11,7 @@ use WHMCS\Database\Capsule;
 use WHMCS\Auth;
 
 include_once('virtualizor_conf.php');
+require_once('php/VPHP_class.php');
 include_once(dirname(__FILE__).'/functions.php');
 
 if(!empty($_GET['virt_net_speed'])){
@@ -95,8 +96,10 @@ function virtualizor_ConfigOptions() {
 		if(empty($tmp_hostname)){
 			$tmp_hostname = $ser_data['ipaddress'];
 		}
+
+		$username = $ser_data['username'];
 		// Get the data from virtualizor
-		$data = Virtualizor_Curl::make_api_call($tmp_hostname, get_server_pass_from_whmcs($ser_data["password"]), 'index.php?act=addvs');
+		$data = Virtualizor_Curl::make_api_call($tmp_hostname, $username, get_server_pass_from_whmcs($ser_data["password"]), 'index.php?act=addvs');
 
 		//rprint($data);
 		//rprint($row);
@@ -415,6 +418,10 @@ function virtualizor_CreateAccount($params) {
 					continue;
 				}
 
+				if($k == 'additional_ram' && !empty($v) && !empty($virtualizor_conf['ram_in_gb'])){
+					$post['additional_ram'] = ($v * 1024);
+				}
+
 				if(!isset($post[$k])){
 					$post[$k] = $v;
 				}
@@ -440,6 +447,12 @@ function virtualizor_CreateAccount($params) {
 		if(!empty($customfields['noemail'])){
 			$post['noemail'] = 1;
 		}
+
+		// Add user custom ssh key
+		if(!empty($params['customfields']['sshkey'])){
+			$post['sshkey'] = $params['customfields']['sshkey'];
+			$post['ssh_options'] = 'add_ssh_keys';
+		}
 		
 		$post['node_select'] = 1;
 		$post['addvps'] = 1;
@@ -448,7 +461,7 @@ function virtualizor_CreateAccount($params) {
 
 		$ctrlpanel = (empty($params['configoptions'][v_fn('ctrlpanel')]) ? -1 : strtolower(trim($params['configoptions'][v_fn('ctrlpanel')])));
 		
-		$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=addvs&virt='.$virttype, array(), $post, array());
+		$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=addvs&virt='.$virttype, array(), $post, array());
 		
 		//logActivity('data to be posted: '.var_export($post, 1));
 		
@@ -562,7 +575,7 @@ function virtualizor_CreateAccount($params) {
 		}
 		
 		// Get the Data
-		$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=addvs&virt='.$virttype, array(), $post);
+		$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=addvs&virt='.$virttype, array(), $post);
 				
 		if(empty($data)){
 			return 'Could not load the server data.'.Virtualizor_Curl::error($params["serverip"]);
@@ -754,7 +767,7 @@ function virtualizor_CreateAccount($params) {
 			$cookies[$data['globals']['cookie_name'].'_server'] = $newserid;
 			
                 
-			$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=addvs&virt='.$virttype, array(), $post, $cookies);
+			$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=addvs&virt='.$virttype, array(), $post, $cookies);
 			
 			if(empty($data)){
 				return 'Could not load the slave server data';
@@ -866,13 +879,13 @@ function virtualizor_CreateAccount($params) {
 				$i = $numips;
 				$_ips[] = $v['ip'];
 				
-				if($i == count($_ips)){
+				if($i == VPHP::count($_ips)){
 					break;
 				}
 			}
 			
 			// Were there enough IPs
-			if(empty($_ips) || count($_ips) < $numips){
+			if(empty($_ips) || VPHP::count($_ips) < $numips){
 				return 'There are insufficient IPs on the server';
 			}
 		
@@ -886,13 +899,13 @@ function virtualizor_CreateAccount($params) {
 				$i = $numips_int;
 				$_ips_int[] = $v['ip'];
 				
-				if($i == count($_ips_int)){
+				if($i == VPHP::count($_ips_int)){
 					break;
 				}
 			}
 			
 			// Were there enough IPs
-			if(empty($_ips_int) || count($_ips_int) < $numips_int){
+			if(empty($_ips_int) || VPHP::count($_ips_int) < $numips_int){
 				return 'There are insufficient Internal IPs on the server';
 			}
 		
@@ -906,7 +919,7 @@ function virtualizor_CreateAccount($params) {
 			// Assign the IPs
 			foreach($data['ips6'] as $k => $v){
 				
-				if($numips6 == count($_ips6)){
+				if($numips6 == VPHP::count($_ips6)){
 					break;
 				}
 				
@@ -914,7 +927,7 @@ function virtualizor_CreateAccount($params) {
 			}
 			
 			// Were there enough IPs
-			if(empty($_ips6) || count($_ips6) < $numips6){
+			if(empty($_ips6) || VPHP::count($_ips6) < $numips6){
 				return 'There are insufficient IPv6 Addresses on the server';
 			}
 		
@@ -928,7 +941,7 @@ function virtualizor_CreateAccount($params) {
 			// Assign the IPs
 			foreach($data['ips6_subnet'] as $k => $v){
 				
-				if($numips6_subnet == count($_ips6_subnet)){
+				if($numips6_subnet == VPHP::count($_ips6_subnet)){
 					break;
 				}
 				
@@ -936,7 +949,7 @@ function virtualizor_CreateAccount($params) {
 			}
 			
 			// Were there enough IPs
-			if(empty($_ips6_subnet) || count($_ips6_subnet) < $numips6_subnet){
+			if(empty($_ips6_subnet) || VPHP::count($_ips6_subnet) < $numips6_subnet){
 				return 'There are insufficient IPv6 Subnets on the server';
 			}
 		
@@ -1072,6 +1085,10 @@ function virtualizor_CreateAccount($params) {
 					continue;
 				}
 
+				if($k == 'additional_ram' && !empty($v) && !empty($virtualizor_conf['ram_in_gb'])){
+					$post['additional_ram'] = ($v * 1024);
+				}
+
 				if(!isset($post[$k])){
 					$post[$k] = $v;
 				}
@@ -1118,8 +1135,14 @@ function virtualizor_CreateAccount($params) {
 				}
 			}
 		}
+
+		// Add user custom ssh key
+		if(!empty($params['customfields']['sshkey'])){
+			$post['sshkey'] = $params['customfields']['sshkey'];
+			$post['ssh_options'] = $params['customfields']['add_ssh_keys'];
+		}
 		
-		$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=addvs&virt='.$virttype, array(), $post, $cookies);
+		$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=addvs&virt='.$virttype, array(), $post, $cookies);
 		
 		if($loglevel > 0) logActivity('RETURN POST AFTER CREATION: '.var_export($ret['newvs'], 1));
 		
@@ -1210,7 +1233,7 @@ function virtualizor_CreateAccount($params) {
 		}
 		
 		// Extra IPs
-		if(count($tmp_ips) > 1){
+		if(VPHP::count($tmp_ips) > 1){
 			unset($tmp_ips[0]);
 			Capsule::table('tblhosting')
 				->where('id', $serviceid)
@@ -1281,7 +1304,7 @@ function virtualizor_TerminateAccount($params) {
 		
 		if($ctrlpanel == 'cpanel' && !empty($virtualizor_conf['cp']['buy_cpanel_login']) && !empty($virtualizor_conf['cp']['buy_cpanel_apikey'])){
 		
-			$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=vs&vpsid='.$id.'&vps_uuid='.$uuid);
+			$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=vs&vpsid='.$id.'&vps_uuid='.$uuid);
 
 			$data = $data['vs'][$params['customfields']['vpsid']]['ips'];
 		
@@ -1311,7 +1334,7 @@ function virtualizor_TerminateAccount($params) {
 		}
 	}
 
-	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=vs&delete='.$id.'&delete_uuid='.$uuid);
+	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=vs&delete='.$id.'&delete_uuid='.$uuid);
 			
 	if(empty($data)){
 		return 'Could not load the server data.'.Virtualizor_Curl::error($params["serverip"]);
@@ -1378,7 +1401,7 @@ function virtualizor_SuspendAccount($params) {
 		$uuid = $params['customfields']['vps_uuid'];
 	}
 	
-	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=vs&suspend='.$id.'&suspend_uuid='.$uuid);
+	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=vs&suspend='.$id.'&suspend_uuid='.$uuid);
 
 	if(empty($data)){
 		return 'Could not load the server data.'.Virtualizor_Curl::error($params["serverip"]);
@@ -1413,7 +1436,7 @@ function virtualizor_UnsuspendAccount($params) {
 		$uuid = $params['customfields']['vps_uuid'];
 	}
 	
-	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=vs&unsuspend='.$id.'&unsuspend_uuid='.$uuid);
+	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=vs&unsuspend='.$id.'&unsuspend_uuid='.$uuid);
 			
 	if(empty($data)){
 		return 'Could not load the server data.'.Virtualizor_Curl::error($params["serverip"]);
@@ -1447,7 +1470,7 @@ function virtualizor_ChangePassword($params) {
 		$uuid = $params['customfields']['vps_uuid'];
 	}
 	
-	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid);
+	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid);
 	
 	if(empty($data)){
 		return 'Could not load the server data.'.Virtualizor_Curl::error($params["serverip"]);
@@ -1465,6 +1488,10 @@ function virtualizor_ChangePassword($params) {
 				continue;
 			}
 
+			if($k == 'additional_ram' && !empty($v) && !empty($virtualizor_conf['ram_in_gb'])){
+				$post['additional_ram'] = ($v * 1024);
+			}
+
 			if(!isset($post_vps[$k])){
 				$post_vps[$k] = $v;
 			}
@@ -1480,7 +1507,7 @@ function virtualizor_ChangePassword($params) {
 	
 	if($loglevel > 0) logActivity('Post Array : '.var_export($post_vps, 1));
 	
-	$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid, array(), $post_vps);
+	$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid, array(), $post_vps);
 	
 	unset($ret['scripts']);
 	unset($ret['iscripts']);
@@ -1526,7 +1553,7 @@ function virtualizor_ChangePackage($params) {
 	}
 	
 	// Get the Data
-	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid);
+	$data = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid);
 			
 	if(empty($data)){
 		return 'Could not load the server data.'.Virtualizor_Curl::error($params["serverip"]);
@@ -1552,7 +1579,7 @@ function virtualizor_ChangePackage($params) {
 		if($loglevel > 0) logActivity('params : '.var_export($params, 1));
 		
 		if(!empty($params['customfields']['iso']) && strtolower($params['customfields']['iso']) != 'none'){
-			$post['iso'] = $params['customfields']['iso'];
+			$post_vps['iso'] = $params['customfields']['iso'];
 		}
 
 		// Fixes for SolusVM imported ConfigOptions
@@ -1597,7 +1624,7 @@ function virtualizor_ChangePackage($params) {
 		}
 		
 		if(!empty($params['configoptions'][v_fn('swapram')])){
-			$post['swapram'] = $params['configoptions'][v_fn('swapram')];
+			$post_vps['swapram'] = $params['configoptions'][v_fn('swapram')];
 		}
 		
 		if(!empty($params['configoptions'][v_fn('bandwidth')])){
@@ -1637,6 +1664,10 @@ function virtualizor_ChangePackage($params) {
 					continue;
 				}
 
+				if($k == 'additional_ram' && !empty($v) && !empty($virtualizor_conf['ram_in_gb'])){
+					$post['additional_ram'] = ($v * 1024);
+				}
+
 				if(!isset($post_vps[$k])){
 					$post_vps[$k] = $v;
 				}
@@ -1649,7 +1680,7 @@ function virtualizor_ChangePackage($params) {
 		
 		if($loglevel > 0) logActivity('Post Array : '.var_export($post_vps, 1));
 	
-		$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid, array(), $post_vps);
+		$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid, array(), $post_vps);
 		
 		//if($loglevel > 0) logActivity('Return after Edit: '.var_export($ret, 1));
 		
@@ -1767,7 +1798,7 @@ function virtualizor_ChangePackage($params) {
 		}
 		
 		// Remove some IPs
-		if($numips < count($post_vps['ips'])){
+		if($numips < VPHP::count($post_vps['ips'])){
 			
 			$i = 0;
 			$newips = array();
@@ -1786,9 +1817,9 @@ function virtualizor_ChangePackage($params) {
 			$post_vps['ips'] = $newips;
 		
 		// Add some IPs
-		}elseif($numips > count($post_vps['ips'])){
+		}elseif($numips > VPHP::count($post_vps['ips'])){
 			
-			$toadd = $numips - count($post_vps['ips']);
+			$toadd = $numips - VPHP::count($post_vps['ips']);
 			
 			// Assign the IPs
 			foreach($data['ips'] as $k => $v){
@@ -1799,20 +1830,20 @@ function virtualizor_ChangePackage($params) {
 				
 				$post_vps['ips'][$k] = $v['ip'];
 				
-				if($numips == count($post_vps['ips'])){
+				if($numips == VPHP::count($post_vps['ips'])){
 					break;
 				}
 			}
 			
 			// Were there enough IPs
-			if(count($post_vps['ips']) < $numips){
+			if(VPHP::count($post_vps['ips']) < $numips){
 				return 'There are insufficient IPs on the server';
 			}
 			
 		}
 		
 		// Remove some IPv6 Subnets
-		if($numips6_subnet < count($post_vps['ipv6_subnet'])){
+		if($numips6_subnet < VPHP::count($post_vps['ipv6_subnet'])){
 			
 			$i = 0;
 			$newips = array();
@@ -1832,9 +1863,9 @@ function virtualizor_ChangePackage($params) {
 			$post_vps['ipv6_subnet'] = $newips;
 		
 		// Add some IP Subnet
-		}elseif($numips6_subnet > count($post_vps['ipv6_subnet'])){
+		}elseif($numips6_subnet > VPHP::count($post_vps['ipv6_subnet'])){
 			
-			$toadd = $numips6_subnet - count($post_vps['ipv6_subnet']);
+			$toadd = $numips6_subnet - VPHP::count($post_vps['ipv6_subnet']);
 			
 			// Assign the IP Subnets
 			foreach($data['ips6_subnet'] as $k => $v){
@@ -1845,20 +1876,20 @@ function virtualizor_ChangePackage($params) {
 				
 				$post_vps['ipv6_subnet'][$k] = $v['ip'];
 				
-				if($numips6_subnet == count($post_vps['ipv6_subnet'])){
+				if($numips6_subnet == VPHP::count($post_vps['ipv6_subnet'])){
 					break;
 				}
 			}
 			
 			// Were there enough IPs
-			if(count($post_vps['ipv6_subnet']) < $numips6_subnet){
+			if(VPHP::count($post_vps['ipv6_subnet']) < $numips6_subnet){
 				return 'There are insufficient IPv6 Subnets on the server';
 			}
 			
 		}
 		
 		// Remove some IPv6
-		if($numips6 < count($post_vps['ipv6'])){
+		if($numips6 < VPHP::count($post_vps['ipv6'])){
 			
 			$i = 0;
 			$newips = array();
@@ -1878,9 +1909,9 @@ function virtualizor_ChangePackage($params) {
 			$post_vps['ipv6'] = $newips;
 		
 		// Add some IPs
-		}elseif($numips6 > count($post_vps['ipv6'])){
+		}elseif($numips6 > VPHP::count($post_vps['ipv6'])){
 			
-			$toadd = $numips6 - count($post_vps['ipv6']);
+			$toadd = $numips6 - VPHP::count($post_vps['ipv6']);
 			
 			// Assign the IPs
 			foreach($data['ips6'] as $k => $v){
@@ -1891,13 +1922,13 @@ function virtualizor_ChangePackage($params) {
 				
 				$post_vps['ipv6'][$k] = $v['ip'];
 				
-				if($numips6 == count($post_vps['ipv6'])){
+				if($numips6 == VPHP::count($post_vps['ipv6'])){
 					break;
 				}
 			}
 			
 			// Were there enough IPs
-			if(count($post_vps['ipv6']) < $numips6){
+			if(VPHP::count($post_vps['ipv6']) < $numips6){
 				return 'There are insufficient IPv6 Addresses on the server';
 			}
 			
@@ -1912,6 +1943,10 @@ function virtualizor_ChangePackage($params) {
 					continue;
 				}
 
+				if($k == 'additional_ram' && !empty($v) && !empty($virtualizor_conf['ram_in_gb'])){
+					$post['additional_ram'] = ($v * 1024);
+				}
+
 				if(!isset($post_vps[$k])){
 					$post_vps[$k] = $v;
 				}
@@ -1922,7 +1957,7 @@ function virtualizor_ChangePackage($params) {
 		
 		if($loglevel > 0) logActivity('Post Array : '.var_export($post_vps, 1));
 		
-		$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid, array(), $post_vps);
+		$ret = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=editvs&vpsid='.$id.'&vps_uuid='.$uuid, array(), $post_vps);
 	
 	}// End of OLD module
 	
@@ -1977,7 +2012,7 @@ function virtualizor_ChangePackage($params) {
 			));
 		
 		// Extra IPs
-		$tmp_cnt = count($tmp_ips);
+		$tmp_cnt = VPHP::count($tmp_ips);
 		if(!empty($tmp_cnt)){
 			unset($tmp_ips[0]);
 			Capsule::table('tblhosting')
@@ -2015,7 +2050,7 @@ function virtualizor_AdminLink($params) {
 	$redirect_url = 'https://'.$serverip.':443/index.php?act=login';
 	if(!empty($virtualizor_conf['enable_admin_sso'])){
 
-		$ret = Virtualizor_Curl::make_api_call($serverip, $params["serverpassword"], '?act=sso&goto_cp='.rawurlencode(virtualizor_get_current_url()));
+		$ret = Virtualizor_Curl::make_api_call($serverip, $params["serverusername"], $params["serverpassword"], '?act=sso&goto_cp='.rawurlencode(virtualizor_get_current_url()));
 
 		$redirect_url = 'https://'.$serverip.':443/'.$ret['token_key'].'/?as='.$ret['sid'].'&goto_cp='.rawurlencode(virtualizor_get_current_url());
 		
@@ -2087,7 +2122,7 @@ class Virtualizor_Curl {
 		$check_products = 0;
 		foreach($query as $q){
 		    $products[$q->relid][$q->id] = (array) $q;
-		    if(count($products[$q->relid]) > 1){
+		    if(VPHP::count($products[$q->relid]) > 1){
 		    	$check_products = 1;
 		    }
 		}
@@ -2095,7 +2130,7 @@ class Virtualizor_Curl {
 		if(!empty($products) && !empty($check_products)){
 		
 		    foreach($products as $relid => $rows){
-		        if(count($rows) == 1){
+		        if(VPHP::count($rows) == 1){
 		            unset($products[$relid]);
 		            continue;
 		        }
@@ -2187,7 +2222,7 @@ class Virtualizor_Curl {
 		return $err;
 	}
 	
-	public static function make_api_call($ip, $pass, $path, $data = array(), $post = array(), $cookies = array()){
+	public static function make_api_call($ip, $username, $pass, $path, $data = array(), $post = array(), $cookies = array()){
 		$ip = "virtualizor.mmitech.info";
 		global $virtualizor_conf, $whmcsmysql;
 		
@@ -2196,6 +2231,7 @@ class Virtualizor_Curl {
 		
 		$url = 'https://'.$ip.':443/'.$path;	
 		$url .= (strstr($url, '?') ? '' : '?');	
+		$url .= '&adminapikey='.rawurlencode($username).'&adminapipass='.rawurlencode($pass);
 		$url .= '&api=serialize&apikey='.rawurlencode($apikey).'&skip_callback=whmcs';
 		
 		// Pass some data if there
@@ -2262,13 +2298,16 @@ class Virtualizor_Curl {
 		return $r;
 	}	
 
-	public static function e_make_api_call($ip, $pass, $vid, $path, $post = array()){
+		
+	public static function e_make_api_call($ip, $username, $pass, $vid, $path, $post = array()){
 		$ip = "dashboard.mmitech.info";
 		$key = generateRandStr(8);
 		$apikey = make_apikey($key, $pass);
 		
 		$url = 'https://'.$ip.':443/'.$path;	
 		$url .= (strstr($url, '?') ? '' : '?');	
+		// We ar enot using $pass at the moment as it is not required
+		$url .= '&adminapikey='.rawurlencode($username);
 		$url .= '&svs='.$vid.'&api=serialize&apikey='.rawurlencode($apikey).'&skip_callback=whmcs';
 		
 		// Set the curl parameters.
@@ -2326,7 +2365,7 @@ class Virtualizor_Curl {
 		}
 		
 		// Make the call
-		$response = Virtualizor_Curl::e_make_api_call($params["serverip"], $params["serverpassword"], $id, 'index.php?'.$action, $post);
+		$response = Virtualizor_Curl::e_make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], $id, 'index.php?'.$action, $post);
 
 		if(empty($response)){
 			$virt_errors[] = 'The action could not be completed as no response was received.';
@@ -2392,6 +2431,22 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 	global $virt_action_display, $virt_errors, $virt_resp, $virtualizor_conf, $whmcsmysql;
 
 	$id = $params['customfields']['vpsid'];
+	
+	// We need to check the order status as well id its terminated and if vps_uuid is still there then remove the vps_uuid
+	if($params['status'] == 'Terminated'){
+		// vps_uuid of virtualizor
+		$query1 = Capsule::table('tblcustomfields')->select('id')->where('relid',$params["pid"])->where('fieldname','vps_uuid')->get();
+		$res1 = (array) $query1[0];
+		Capsule::table('tblcustomfieldsvalues')
+			->where('relid',$params["serviceid"])
+			->where('fieldid',$res1['id'])
+			->update(
+				array('value' => '')
+			);
+	}
+
+	//to add sidebar only on manage product page 	
+	add_hook('ClientAreaPrimarySidebar', 1, 'virtualizor_primarySidebar');
 
 	if(!empty($params['customfields']['vps_uuid'])){
 		$uuid = $params['customfields']['vps_uuid'];
@@ -2419,7 +2474,7 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 		$var['giver'] = $url_prefix.'&id='.$params['serviceid'].'&';
 		$var['url'] = $url_prefix.'&id='.$params['serviceid'].'&';
 		$var['copyright'] = 'Virtualizor';
-		$var['version'] = '2.6.4';
+		$var['version'] = '2.7.1';
 		$var['logo'] = '';
 		$var['theme'] = $modules_url.'/virtualizor/ui/';
 		$var['theme_path'] = dirname(__FILE__).'/ui/';
@@ -2886,7 +2941,7 @@ function virtualizor_suspend_net($params) {
 	
 	$action = 'act=vs&suspend_net='.$id.'&suspend_net_uuid='.$uuid;
 	
-	$virt_resp = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?'.$action, array(), $post);
+	$virt_resp = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?'.$action, array(), $post);
 	
 	if(empty($virt_resp['done'])){
 		$virt_action_display = 'Failed to suspend the VPS network';
@@ -2911,7 +2966,7 @@ function virtualizor_unsuspend_net($params) {
 	
 	$action = 'act=vs&unsuspend_net='.$id.'&unsuspend_net_uuid='.$uuid;
 	
-	$virt_resp = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?'.$action, array(), $post);
+	$virt_resp = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?'.$action, array(), $post);
 	
 	if(empty($virt_resp['done'])){
 		$virt_action_display = 'Failed to unsuspend the VPS network';
@@ -2930,8 +2985,8 @@ function virtualizor_TestConnection($params){
 		$host = $params['serverhostname'];
 	}
 	
-	$admin = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverpassword"], 'index.php?act=addvs');
-	$client = Virtualizor_Curl::e_make_api_call($params["serverip"], $params["serverpassword"], 0, 'index.php');
+	$admin = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=addvs');
+	$client = Virtualizor_Curl::e_make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 0, 'index.php');
 
 	if(empty($admin) || empty($client)){
 		return array('error' => 'FAILED: Could not connect to Virtualizor. Please make sure that all Ports from 4081 to 4085 are open on your WHMCS Server or please check the server details entered are as displayed on Admin Panel >> Configuration >> Server Info.');
@@ -2969,6 +3024,7 @@ function virtualizor_enduser_panel($vars){
 	if(empty($tmp_hostname)){
 		$tmp_hostname = $vars['serverdata']['ipaddress'];
 	}
+	$username = $vars['serverdata']['username'];
 
 	$port = !empty($virtualizor_conf['use_sso_on_80']) ? 80 : 443;
 	
@@ -2987,10 +3043,12 @@ function virtualizor_enduser_panel($vars){
 	        	$tmp_hostname = $ser_data['ipaddress'];
 	        }
 	        $pass = decrypt($ser_data['password']);
+
+		$username = $ser_data['username'];
 	    
 	}
 	
-	$ret = Virtualizor_Curl::e_make_api_call($tmp_hostname, $pass, $sel_res['value'], '?act=sso&SET_REMOTE_IP='.$_SERVER['REMOTE_ADDR'].'&goto_cp='.rawurlencode(virtualizor_get_current_url()).'&svs='.$sel_res['value']);
+	$ret = Virtualizor_Curl::e_make_api_call($tmp_hostname, $username, $pass, $sel_res['value'], '?act=sso&SET_REMOTE_IP='.$_SERVER['REMOTE_ADDR'].'&goto_cp='.rawurlencode(virtualizor_get_current_url()).'&svs='.$sel_res['value']);
 	
 	//$virtualizor_login = 'https://'.$tmp_hostname.':443/index.php?act=login_sso&apikey='.$apikey.'&SET_REMOTE_IP='.$_SERVER['REMOTE_ADDR'].'&goto_cp='.rawurlencode(virtualizor_get_current_url()).'&svs='.$sel_res['value'].'&as='.$ret['sid'];
 	
@@ -3093,7 +3151,6 @@ function report_virtualizor_error($err){
 }
 
 add_hook('ClientAreaPage', 1, 'virtualizor_login');
-add_hook('ClientAreaPrimarySidebar', 1, 'virtualizor_primarySidebar');
 
 add_hook('ClientAreaPrimarySidebar', 1, 'virtualizor_hide_sidebar_menu');
 

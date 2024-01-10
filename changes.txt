@@ -1,3 +1,21 @@
+[2.7.0][07-12-2023]
+- RDNS entries were not getting deleted. This is fixed.
+
+[2.6.8][09-10-2023]
+- Plan Upgrade was not updating the Plan. Issue is Fixed.
+
+[2.6.7][21-09-2023]
+- Additional ram issue fixed
+- Added sshkey as customfield
+- Side bar will be shown on client panel page
+
+[2.6.6][01-06-2023]
+- Changes related to PHP 8
+- Boot order option added
+
+[2.6.5][31-01-2023]
+- Additional RAM was not getting converted to MB if the "ram_in_gb" was enabled. This is fixed.
+
 [2.6.4][16-12-2022]
 - PHP 8 compatibility added
 

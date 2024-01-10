@@ -118,6 +118,7 @@ var task_timeout = ''; // This is just a blank timer
 $(document).ready(function(){
 	var q = windowHASH();
 	loadpage(q); // Load the Dashboard by default
+	cdrom_bootorder(); 
 });
 
 // Shows the loading text
@@ -2897,28 +2898,63 @@ function show_hvmsetting_window(){
 				if('boot' in data){									
 					$('#boot_reorder_pos_tr').show();
 					var order='';
-					var boot_list = '<select name="boot" class="form-control w-100">';
+					var boot_list_old = '<select name="boot" class="form-control w-100">';
+					var boot_list_new = '<div class="row"><div class="col-6"><select name="boot" id="boot" class="form-control w-100" size="4">';
 					var i = 0;
-			
+					let new_boot = 0;
+
+					
 					for(x in data['boot']){					
-						if(x == 'c'){
-							data['boot'][x] = '1) Hard Disk 2) CD Drive';
-							order = 'cd';							
-						}else if(x == 'd'){
-							data['boot'][x] = '1) CD Drive 2) Hard Disk';
-							order = 'dc';
-						}
-						
-						if(empty(i)){
-							boot_list += '<option value="'+order+'" id="boot_'+x+'" selected="selected">'+data['boot'][x]+'</option>';	
+						if(x.match(/boot_order/gi)){
+							let hidden_value = '';
+							data['boot'][x].forEach((element) => {
+								boot_list_new += '<option value="'+element+'" id="boot_'+element+'">'+element.toUpperCase()+'</option>';	
+								hidden_value += element + ',';
+							});
+							new_boot = 1;
+							document.getElementById("boot_reorder_pos_val").value = hidden_value;
+
 						}else{
-							boot_list += '<option value="'+order+'" id="boot_'+x+'">'+data['boot'][x]+'</option>';
+
+							if(x == 'c'){
+								data['boot'][x] = '1) Hard Disk 2) CD Drive';
+								order = 'cd';							
+							}else if(x == 'd'){
+								data['boot'][x] = '1) CD Drive 2) Hard Disk';
+								order = 'dc';
+							}
+							
+							if(empty(i)){
+								boot_list_old += '<option value="'+order+'" id="boot_'+x+'" selected="selected">'+data['boot'][x]+'</option>';	
+							}else{
+								boot_list_old += '<option value="'+order+'" id="boot_'+x+'">'+data['boot'][x]+'</option>';
+							}
+
 						}
 
 						i++;
 					}
-					boot_list += '</select>';
-					$("#boot_reorder_pos").html(boot_list);
+
+					if(new_boot){
+						boot_list_new += '</select>\
+								</div>\
+								<div class="col-6">\
+									<div class="d-flex flex-column mb-3">\
+										<div class="p-2">\
+											<button type="button" id="up" onclick="change_bootorder(this)" class="btn"><i class="fas fa-arrow-up"></i></button>\
+										</div>\
+										<div class="p-2">\
+											<button type="button" id="down" onclick="change_bootorder(this)" class="btn"><i class="fas fa-arrow-down"></i></button>\
+										</div>\
+									</div>\
+								</div>\
+						</div>';
+						
+						$("#boot_reorder_pos").html(boot_list_new);
+					}else{
+						boot_list_old += '</select>';
+						$("#boot_reorder_pos").html(boot_list_old);
+					}
 				}
 				
 				if('isos' in data){
@@ -3146,11 +3182,11 @@ function show_vnc_window(window){
 			vnc_buttons += '<a href="javascript:void(0);" onclick="launchHTML5vnc(\''+N['vpsid']+'\')" class="blue_btn">{{vnc_novnc_button}}</a>';
 		}
 
-		if('disable_java_vnc' in data['info']){
+		/*if('disable_java_vnc' in data['info']){
 			vnc_buttons += '';
 		}else{
 			vnc_buttons += '<a href="javascript:void(0);" onclick="launchjvnc(\''+N['vpsid']+'\')" id="vnc_button" class="blue_btn ml-3">{{vnc_launch_vnc}}</a>';
-		}
+		}*/
 
 		$(vnc_button_id).html(vnc_buttons);
 	});
@@ -5424,11 +5460,20 @@ function rdns_onload(){
 	cols["content"] = {"l" : '{{domain}}'};
 	cols["delete"] = {"l" : ''};
 
+	pageNum = getParameterByName('page', 1);
+	pageNum = empty(pageNum) ? 1 : pageNum;
+
 	// Prepare the list
+	let inc_counter = ((pageNum - 1) * 50) + 1;
 	for(x in N["rdns_records"]){
-		$v = N["rdns_records"][x];
-		N["rdns_records"][x]["delete"] = '<a href="javascript:delrdns('+x+')" ><i class="far fa-trash-alt delete fa-1x"></i></a>';
+		N["rdns_records"][x]["delete"] = '<a href="javascript:delrdns(\''+x+'\')" ><i class="far fa-trash-alt delete fa-1x"></i></a>';
+		if(x.includes('id')){
+			N["rdns_records"][x]["delete"] = 'NA';
+		}
+		N["rdns_records"][x]['id'] = inc_counter++;
 	}
+
+	pageLinks("records-rdns", 'act=rdns', N['page']);
 
 	// Form the TABLE
 	table({'id' : 'rdnslist', 'tid' : 'rdnslist_table', "width" : '100%'}, cols, N["rdns_records"]);
@@ -5438,7 +5483,8 @@ function rdns_onload(){
 function delrdns(id){
 	modalConfirm(function(confirm){
 		if(confirm){
-			call('[[API]]'+'act=rdns&delete='+id);
+			pageNum = getParameterByName('page', 1);
+			call('[[API]]'+'act=rdns&delete='+id+'&page='+pageNum);
 		}else{
 			return false;
 		}
@@ -5502,6 +5548,10 @@ function vpsrdns_show(show_pwindow){
 			// Form the TABLE	
 			table({'id' : 'vpsrdnslist', 'tid' : 'vpsrdnslist_table', "width" : '100%'}, cols, data["rdns_records"]);
 		}
+
+		$("#vpsrdnslist_table").dataTable({
+			"order": [[ 0, "desc" ]]
+		});
 		
 		// Adjust RDNS list window scroll on WHMCS panel only
 		// $('#vpsrdnslist').css({'width': ''+(window.innerWidth < 350 ? 600 : window.innerWidth*0.6)+'px', 'overflow': 'scroll'});	
@@ -9447,4 +9497,121 @@ function error_break_onload(){
 	$("#error_heading").html('<i class="fas fa-exclamation-triangle stop"></i> '+N['fatal_error_heading']);
 	$("#error_text").text(N['fatal_error_text']);
 	
+}
+
+//changes the bootoder 
+change_bootorder = (ele) => {
+    
+	//get the element by id
+    const select = document.getElementById("boot"); 
+    //perform if options are greater then one
+	if(select.options.length > 1){
+
+		var selected = {};
+		let prev = "";
+		let pos = 0;
+		let current = hidden_value = "";
+
+		for (var option of select.options){
+			if(option.selected) {
+				prev = pos;
+			}
+			selected[pos] = option.value;
+			pos+=1
+		}
+		
+		if(prev !== ""){
+			current = selected[prev];  
+			let v1 = "";
+			if(ele.id == "up"){
+				v1 = selected[prev - 1];  
+				if(v1 != undefined){
+					selected[prev-1] = current;
+				}
+			}else if(ele.id == "down"){
+				v1 = selected[prev + 1];  
+				if(v1 != undefined){
+					selected[prev+1] = current;
+				}
+			}   
+			if(v1 != undefined){
+				selected[prev] = v1;
+			}
+		}
+		
+		select.innerHTML = "";
+		
+		for (var key in selected) {
+			
+			let newOption = new Option(selected[key].toUpperCase(), selected[key], false, false);
+			
+			if(current === selected[key]){
+				newOption = new Option(selected[key].toUpperCase(), selected[key], true, true);
+			}
+			select.add(newOption);
+
+			hidden_value += selected[key] + ',';
+		}
+
+		document.getElementById("boot_reorder_pos_val").value = hidden_value;
+
+	}
+}
+
+
+add_bootorder = () => {
+	
+	const select = document.getElementById("boot"); 
+
+	if(select){
+		let newOption = "";
+		let val = "";
+
+		if(select.options.length > 1){
+			let disk = cd = 1;
+			for (var option of select.options){
+				if(option.value.match(/cdrom/gi)){
+					cd += 1;	
+				}else if(option.value.match(/disk/gi)){
+					disk += 1;
+				}
+			}
+
+			for(i = 1; (i < disk-1); i++){
+				val = "disk"+i.toString();
+				newOption += "<option value=\""+val+"\">"+val.toUpperCase()+"</option>";
+			}
+
+			for(i= 1; i < cd; i++){
+				val = "cdrom"+i.toString();
+				newOption += "<option value=\""+val+"\">"+val.toUpperCase()+"</option>";
+			}
+			select.innerHTML = "";
+			select.innerHTML = newOption;
+		}
+	}
+}
+
+cdrom_bootorder = () =>{
+	document.getElementById("hvm_sec_iso").onchange = function() {  
+		const select = document.getElementById("boot"); 
+		if(!empty(this.value) && empty(select.querySelector("option[value=\"cdrom2\"]"))){
+			let newOption = new Option("CDROM"+"2", "cdrom"+"2", false, false);
+			select.add(newOption);
+		}
+		if(empty(this.value) && !empty(select.querySelector("option[value=\"cdrom2\"]"))){
+			select.removeChild(select.querySelector("option[value=\"cdrom2\"]"));
+		}
+	};  
+
+	document.getElementById("hvm_isos").onchange = function() {  
+		const select = document.getElementById("boot"); 
+		if(!empty(this.value) && empty(select.querySelector("option[value=\"cdrom1\"]"))){
+			let newOption = new Option("CDROM"+"1", "cdrom"+"1", false, false);
+			select.add(newOption);
+		}
+		if(empty(this.value) && !empty(select.querySelector("option[value=\"cdrom1\"]"))){
+			select.removeChild(select.querySelector("option[value=\"cdrom1\"]"));
+		}
+	}; 
 }

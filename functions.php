@@ -330,10 +330,12 @@ if(!class_exists('hash_encryption')){
 			
 			// Loop through the whole input string
 			while($c < strlen($string)) {
-				// If we have used all characters of the current key we switch to a new one
-				if(($c != 0) and ($c % $this->hash_length == 0)) {
-					// New key is the hash of current key and last block of plaintext
-					$key = $this->_hash($key . substr($out,$c - $this->hash_length,$this->hash_length));
+				if($this->hash_length > 0){
+					// If we have used all characters of the current key we switch to a new one
+					if(($c != 0) and ($c % $this->hash_length == 0)) {
+						// New key is the hash of current key and last block of plaintext
+						$key = $this->_hash($key . substr($out,$c - $this->hash_length,$this->hash_length));
+					}
 				}
 				// Generate output by xor-ing input and key character for character
 				$out .= chr(ord($key[$c % $this->hash_length]) ^ ord($string[$c]));
