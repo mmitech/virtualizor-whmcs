@@ -3047,8 +3047,6 @@ function virtualizor_enduser_panel($vars){
 		$username = $ser_data['username'];
 	    
 	}
-	// manually added to resolve the panel to mmitech dashboard
-	$tmp_hostname = "dashboard.mmitech.info"
 	
 	$ret = Virtualizor_Curl::e_make_api_call($tmp_hostname, $username, $pass, $sel_res['value'], '?act=sso&SET_REMOTE_IP='.$_SERVER['REMOTE_ADDR'].'&goto_cp='.rawurlencode(virtualizor_get_current_url()).'&svs='.$sel_res['value']);
 	
