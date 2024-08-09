@@ -24,8 +24,8 @@ class Virtualizor_Admin_API {
 	
 	var $key = '';
 	var $pass = '';
-	var $ip = 'virtualizor.mmitech.info';
-	var $port = 443;
+	var $ip = '';
+	var $port = 4085;
 	var $protocol = 'https';
 	var $error = array();
 	
@@ -44,9 +44,9 @@ class Virtualizor_Admin_API {
 		$this->pass = $pass;
 		$this->ip = $ip;
 		$this->port = $port;
-		//if($port != 4085){
-		//	$this->protocol = 'http';
-		//}
+		if($port != 4085){
+			$this->protocol = 'http';
+		}
 	}
 	
 	/**

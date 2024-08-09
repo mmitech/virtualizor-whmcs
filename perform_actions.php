@@ -46,7 +46,7 @@ $act = $_POST['act'];
 $extra = $_POST['data'];
 
 if(!empty($extra)){
-	$extra_var = unserialize(base64_decode($extra));
+	$extra_var = unserialize(base64_decode($extra),['allowed_classes' => false]);
 }
 
 // Is the request from a valid server ?

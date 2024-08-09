@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <meta name="keywords" content="softaculous, backups, webuzo, aefer, virtualizor, ampps, php, cloud, backups, cdp, data, protection" />
 <title>[[site_name]]</title>
-<link rel="stylesheet" type="text/css" href="[[giver]]give=style.css&[[version]]" />
+<link rel="stylesheet" type="text/css" href="[[giver]]give=style.css&[[version]][[theme_mode]]" id="theme_mode"/>
 <link rel="shortcut icon" href="[[images]]favicon.ico" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
 <script data-cfasync="false" language="javascript" src="[[giver]]give=combined.js&[[version]]&[[patch]]" type="text/javascript"></script>
@@ -140,6 +140,12 @@
 							<div class="float-left" tooltip="{{back}}" onclick="javascript: window.history.go(-1); return false;">
 								<i class="fas fa-arrow-left fa-2x mx-2"></i>
 							</div>
+						</div>
+						<div>
+							<span onclick="change_theme_mode();" class="mx-2" id="theme_mode_icon_div" tooltip="{{toggle_theme}}">
+								<i class="fas fa-lightbulb fa-2x" id="theme_mode_icon"></i>
+							</span>
+							<input type="hidden" id="theme_mode_val" name="theme_mode_val" value="light">
 						</div>
 						<div class="col-6 p-0" id="refresh_page">
 							<div class="float-left" tooltip="{{refresh_page}}" onclick="refresh_page()">

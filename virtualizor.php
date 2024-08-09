@@ -1,7 +1,7 @@
 <?php
 
-// Last Updated : 02/01/2024
-// Version : 2.7.1
+// Last Updated : 24/05/2024
+// Version : 2.7.2
 
 // Disable warning messages - in PHP 5.4
 //error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
@@ -1193,9 +1193,23 @@ function virtualizor_CreateAccount($params) {
 
 		
 		$uuid = $ret['newvs']['uuid'];
+		$serid = $ret['newvs']['serid'];
+		// logActivity('Newvs call : serid'.$serid.' uuid:'.$uuid);
+		// // add vps_uuid field as well
+		// Virtualizor_Curl::create_uuid_field($pid, $serviceid, $uuid);
+		$field_data = [];
+		// For vps_uuid
+		$field_data['vps_uuid']['fieldname'] = 'vps_uuid';
+		$field_data['vps_uuid']['value'] = $uuid;
+		$field_data['vps_uuid']['adminonly'] = 1;
 
-		// add vps_uuid field as well
-		Virtualizor_Curl::create_uuid_field($pid, $serviceid, $uuid);
+		// For Serid
+		if(!empty($virtualizor_conf['add_serid_custom_field'])){
+			$field_data['serid']['fieldname'] = 'serid';
+			$field_data['serid']['value'] = (empty($serid) ? 'localhost (Master)' : $serid);
+			$field_data['serid']['adminonly'] = 1;
+		}
+		Virtualizor_Curl::create_custom_field($pid, $serviceid, $field_data);
 			
 		// Change the Username to the email
 		Capsule::table('tblhosting')
@@ -2148,6 +2162,65 @@ class Virtualizor_Curl {
 		}
 		
 	}
+	public static function create_custom_field($pid, $serviceid, $field_data){
+
+		Virtualizor_Curl::fix_uuid_field();
+		
+		foreach($field_data as $fk => $fv){
+			
+			// vps_uuid of virtualizor
+			$query = Capsule::table('tblcustomfields')
+					->where('relid', $pid)
+					->where('fieldname', $fv['fieldname'])
+					->get();
+			$result = (array) $query[0];
+			$fieldid = $result['id'];
+			
+			//logActivity('$result:'.var_export($result,1));
+			
+			// We will check if there is an entry if not we will insert it.
+			$query1 = Capsule::table('tblcustomfieldsvalues')
+					->where('relid', $serviceid)
+					->where('fieldid', $result['id'])
+					->get();
+			$sel_res = (array) $query1[0];
+
+			//logActivity('$sel_res:'.var_export($sel_res,1));
+
+			if(empty($result['relid'])){
+
+				$fieldid = Capsule::table('tblcustomfields')
+					->insertGetId(array(
+						'type' => 'product',
+						'relid' => $pid,
+						'fieldname' => $fv['fieldname'],
+						'fieldtype' => 'text',
+						'adminonly' => ($fv['adminonly'] ? 'on' : 'off')
+					));
+
+			}
+			
+			// Insert the value for first time 
+			if(!isset($sel_res['value'])){
+			
+				$insertvalues = Capsule::table('tblcustomfieldsvalues')
+				->insert(array(
+					'value' => $fv['value'],
+					'relid' => $serviceid,
+					'fieldid' => $fieldid
+				));
+			
+			// update the values
+			}else{
+				Capsule::table('tblcustomfieldsvalues')
+				->where('relid', $serviceid)
+				->where('fieldid', $result['id'])
+				->update(
+					array('value' => $fv['value'])
+				);
+			}
+		}
+	}
 
 	public static function create_uuid_field($pid, $serviceid, $uuid){
 		
@@ -2474,13 +2547,29 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 		$var['giver'] = $url_prefix.'&id='.$params['serviceid'].'&';
 		$var['url'] = $url_prefix.'&id='.$params['serviceid'].'&';
 		$var['copyright'] = 'Virtualizor';
-		$var['version'] = '2.7.1';
+		$var['version'] = '2.7.2';
 		$var['logo'] = '';
+		$var['mob_logo'] = '';
 		$var['theme'] = $modules_url.'/virtualizor/ui/';
 		$var['theme_path'] = dirname(__FILE__).'/ui/';
 		$var['images'] = $var['theme'].'images/';
 		$var['virt_dev_license'] = ' ';
 		$var['virt_pirated_license'] = ' ';
+		$var['theme_mode'] = (!empty($virtualizor_conf['theme_mode']) ? '&theme_mode='.$virtualizor_conf['theme_mode'].'&' : '&theme_mode='.$_COOKIE['virt_theme_mode'].'&');
+
+		// For short name of VPS
+		if(!empty($virtualizor_conf['vm_short'])){
+			define('VM_SHORT', $virtualizor_conf['vm_short']);
+		}else{
+			define('VM_SHORT', 'VPS');
+		}
+
+		// For long name of VPS
+		if(!empty($virtualizor_conf['vm_long'])){
+			define('VM_LONG', $virtualizor_conf['vm_long']);
+		}else{
+			define('VM_LONG', 'Virtual Server');
+		}
 		
 		if($_GET['give'] == 'index.html'){
 			
@@ -2551,8 +2640,14 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 							'jquery.dataTables.min.css',
 							'select2.css',
 							'jquery.scrollbar.css',
-							'style.css',
 			);
+			$files['style'] = 'style.css';
+			
+			if(!empty($_REQUEST['theme_mode']) && $_REQUEST['theme_mode'] === 'dark'){
+				$files['style'] = 'style_dark.css';
+			}
+
+				
 			
 			foreach($files as $k => $v){
 				//echo $k.'<br>';
@@ -2601,8 +2696,23 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 		$pid = $params["pid"]; # Product/Service ID
 		$serviceid = $params["serviceid"];
 		$uuid = $res['info']['vps']['uuid']; # VPS uuid
+		$serid = $res['info']['vps']['serid']; # VPS Server ID
+		// logActivity('Enduser call : serid'.$serid.' uuid:'.$uuid);
+		$field_data = [];
+		// For vps_uuid
+		$field_data['vps_uuid']['fieldname'] = 'vps_uuid';
+		$field_data['vps_uuid']['value'] = $uuid;
+		$field_data['vps_uuid']['adminonly'] = 1;
 
-		Virtualizor_Curl::create_uuid_field($pid, $serviceid, $uuid);
+		// For Serid
+		if(!empty($virtualizor_conf['add_serid_custom_field'])){
+			$field_data['serid']['fieldname'] = 'serid';
+			$field_data['serid']['value'] = (empty($serid) ? 'localhost (Master)' : $serid);
+			$field_data['serid']['adminonly'] = 1;
+		}
+		
+		Virtualizor_Curl::create_custom_field($pid, $serviceid, $field_data);
+		// Virtualizor_Curl::create_uuid_field($pid, $serviceid, $uuid);
 		
 		$res['uid'] = 0;
 		
@@ -2622,7 +2732,7 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 		
 		// fetch the novnc file
 		$modules_url_vnc = $modules_url.'/virtualizor';
-		$novnc_viewer = file_get_contents($modules_url_vnc.'/novnc/novnc.html');
+		$novnc_viewer = file_get_contents($modules_url_vnc.'/novnc/vnc_auto_virt.html');
 		
 		$novnc_password = $data['info']['password']; 
 		$vpsid = $params['customfields']['vpsid'];
@@ -2987,12 +3097,23 @@ function virtualizor_TestConnection($params){
 	
 	$admin = Virtualizor_Curl::make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 'index.php?act=addvs');
 	$client = Virtualizor_Curl::e_make_api_call($params["serverip"], $params["serverusername"], $params["serverpassword"], 0, 'index.php');
+	$admin_err = $client_err = '';
+	if(empty($admin)){
+		$admin_err = ' -- Can not get any response from admin panel. Please check '.$params["serverip"].':4085';
+	}
 
-	if(empty($admin) || empty($client)){
-		return array('error' => 'FAILED: Could not connect to Virtualizor. Please make sure that all Ports from 4081 to 4085 are open on your WHMCS Server or please check the server details entered are as displayed on Admin Panel >> Configuration >> Server Info.');
+	if(empty($client)){
+		$client_err = ' -- Can not get any response from enduser panel. Please check '.$params["serverip"].':4083';
+	}
+	
+	$final_err = $admin_err.$client_err;
+	
+	if(!empty($final_err)){
+		return array('error' => 'FAILED: Could not connect to Virtualizor.Please make sure that all Ports from 4081 to 4085 are open on your WHMCS Server or please check the server details entered are as displayed on Admin Panel >> Configuration >> Server Info'.$final_err);
 	}else{
 		return array('success' => true);
-	}    
+	}
+	
 }
 
 function virtualizor_enduser_panel($vars){
@@ -3098,16 +3219,16 @@ function virtualizor_primarySidebar($primarySidebar){
 		
 	//@var \WHMCS\View\Menu\Item $primarySidebar
 	$newMenu = $primarySidebar->addChild(
-		'Dashboard',
+		'Virtualizor',
 		array(
-			'name' => 'Dashboard',
-			'label' => 'Dashboard',
+			'name' => 'Virtualizor',
+			'label' => 'Virtualizor',
 			'order' => 99,
 			'icon' => 'fa-cubes',
 		)
 	);
 	$newMenu->addChild(
-		'Dashboard',
+		'Virtualizor',
 		array(
 			'name' => 'Enduser Panel',
 			'label' => 'Enduser Panel',

@@ -2295,10 +2295,12 @@ function vpsmanage_onload(){
 				axisLabelUseCanvas: true,
 				axisLabelFontSizePixels: 12,
 				axisLabelFontFamily: 'Verdana, Arial',
-				axisLabelPadding: 10
+				axisLabelPadding: 10,
+				tickLength: 0,
 			},
 			yaxis: {
-				show:false
+				show:false,
+				tickLength: 0,
 			},
 			grid: {
 				borderWidth: 0,
@@ -2448,11 +2450,13 @@ function vpsmanage_onload(){
 			},
 			xaxis: {
 				show: false,
-				color: "white"
+				color: "white",
+				tickLength: 0,
 			},
 			yaxis: {
 				min:0,
 				color: "white",
+				tickLength: 0,
 			},
 			grid: {
 				borderWidth: 0,
@@ -2537,7 +2541,8 @@ function vpsmanage_onload(){
 				axisLabelFontFamily: 'Verdana, Arial',
 				axisLabelPadding: 12,
 				ticks:tick_labels,
-				tickSize : 0.5
+				tickSize : 0.5,
+				tickLength: 0,
 			},
 			yaxis:{
 				min:0,
@@ -2553,7 +2558,8 @@ function vpsmanage_onload(){
 						return Math.round(v /1024) + " G";
 					if(v > (1024*1024))
 						return Math.round(v / (1024*1024)) + " T"
-				}
+				},
+				tickLength: 0,
 			},
 			grid:{
 				borderWidth: 0,
@@ -3201,7 +3207,7 @@ function launchHTML5vnc(vpsid){
 	var thisURL = window.location.href;
 	thisURL = thisURL.toString();
 	thisURL = thisURL.replace('http:', 'https:');
-	thisURL = thisURL.replace(':4084', ':443');
+	thisURL = thisURL.replace(':4084', ':4085');
 	window.open('[[url]]act=vnc&novnc=1&jsnohf=1&svs='+vpsid, '_blank', 'height=400,width=720');
 };
 
@@ -4477,6 +4483,8 @@ function flot_options(optionOf){
 				axisLabelFontSizePixels: 12,
 				axisLabelFontFamily: "Verdana, Arial",
 				axisLabelPadding: 10,
+				tickLength: 5,
+				tickLength: 5,
 			},
 			yaxis: {
 				show:true,
@@ -4485,6 +4493,7 @@ function flot_options(optionOf){
 				axisLabelUseCanvas: true,
 				axisLabelFontSizePixels: 12,
 				axisLabelFontFamily: "Verdana, Arial",
+				tickLength: 5,
 			},
 			selection: {
 				mode: "x"
@@ -4681,6 +4690,7 @@ function show_bandwidth_window(mon){
 				timeformat: '%d',
 				color:'white',
 				axisLabelUseCanvas: true,
+				tickLength: 0,
 			},
 			yaxis:{
 				min:0,
@@ -4692,7 +4702,8 @@ function show_bandwidth_window(mon){
 						return Math.round(v /1024) + " G";
 					if(v > (1024*1024))
 						return Math.round(v / (1024*1024)) + " T"
-				}
+				},
+				tickLength: 0,
 			},
 			grid: {
 				borderWidth: 0,
@@ -9439,7 +9450,7 @@ function setCookie(name,value,days) {
         date.setTime(date.getTime() + (days*24*60*60*1000));
         expires = "; expires=" + date.toUTCString();
     }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/;SameSite=None; Secure";
+    document.cookie = name + "=" + (value || "")  + expires + ";";
 };
 
 function getCookie(name) {
@@ -9457,10 +9468,44 @@ function eraseCookie(name) {
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 };
 
-function change_theme_mode(auto_change){
+/*function change_theme_mode(auto_change){
 
 	var auto_change = auto_change || 0;
 	refresh_page();
+	//var theme_mode = getCookie('virt_theme_mode');
+	var href = $("#theme_mode").attr('href');
+	var divClone = $("#pills-tab").clone();
+	let current_theme = $("#theme_mode_val").val();
+
+	const d = new Date();
+	let hour = d.getHours();
+
+	if(!empty(auto_change)){
+		if(hour >= 16 && hour <= 7){
+			theme_mode = 'light';
+		}else{
+			theme_mode = 'dark';
+		}
+	}
+
+	//alert("current_mode - "+current_mode+" theme_mode - "+theme_mode)
+	if(current_theme == 'light'){
+		$("#theme_mode_val").val('dark');
+		var new_href = href.replaceAll("&theme_mode=light&", '&') + "theme_mode=dark&";
+	}
+
+	if(current_theme == 'dark'){
+		$("#theme_mode_val").val('light');
+		var new_href = href.replaceAll("&theme_mode=dark&", '&') + "theme_mode=light&";
+	}
+
+	$("#theme_mode").attr('href', new_href);
+	$("#pills-tab").replaceWith(divClone.clone());
+}*/
+function change_theme_mode(auto_change){
+
+	var auto_change = auto_change || 0;
+	
 	var theme_mode = getCookie('virt_theme_mode');
 	var href = $("#theme_mode").attr('href');
 	var divClone = $("#pills-tab").clone();
@@ -9490,6 +9535,7 @@ function change_theme_mode(auto_change){
 
 	$("#theme_mode").attr('href', new_href);
 	$("#pills-tab").replaceWith(divClone.clone());
+	refresh_page();
 }
 
 function error_break_onload(){
