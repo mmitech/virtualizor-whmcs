@@ -120,7 +120,7 @@ $virtualizor_conf['enable_admin_sso'] = 0;
 $virtualizor_conf['add_serid_custom_field'] = 0;
 
 // To force the theme mode. Values will be light/dark. By default it will be blank, if its blank then user can set theme by clicking on icon
-$virtualizor_conf['theme_mode'] = 'dark';
+$virtualizor_conf['theme_mode'] = 'light';
 
 // Set the alias for VPS 
 $virtualizor_conf['vm_short'] = '';
