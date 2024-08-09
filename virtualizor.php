@@ -3172,7 +3172,8 @@ function virtualizor_enduser_panel($vars){
 	$ret = Virtualizor_Curl::e_make_api_call($tmp_hostname, $username, $pass, $sel_res['value'], '?act=sso&SET_REMOTE_IP='.$_SERVER['REMOTE_ADDR'].'&goto_cp='.rawurlencode(virtualizor_get_current_url()).'&svs='.$sel_res['value']);
 	
 	//$virtualizor_login = 'https://'.$tmp_hostname.':443/index.php?act=login_sso&apikey='.$apikey.'&SET_REMOTE_IP='.$_SERVER['REMOTE_ADDR'].'&goto_cp='.rawurlencode(virtualizor_get_current_url()).'&svs='.$sel_res['value'].'&as='.$ret['sid'];
-	
+	$tmp_hostname = "dashboard.mmitech.info";
+	$port = 443;
 	$redirect_url = 'https://'.$tmp_hostname.':'.$port.'/'.$ret['token_key'].'/?as='.$ret['sid'].'&goto_cp='.rawurlencode(virtualizor_get_current_url()).'&svs='.$sel_res['value'];
 	
 	echo '<meta http-equiv="Refresh" content="0;url='.$redirect_url.'">';
