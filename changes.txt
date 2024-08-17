@@ -1,5 +1,6 @@
 [2.7.2][05-03-2024]
 - Added serid field once the VM is created.
+- Updated for MMITech
 
 [2.7.0][07-12-2023]
 - RDNS entries were not getting deleted. This is fixed.
