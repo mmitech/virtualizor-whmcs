@@ -3220,16 +3220,16 @@ function virtualizor_primarySidebar($primarySidebar){
 		
 	//@var \WHMCS\View\Menu\Item $primarySidebar
 	$newMenu = $primarySidebar->addChild(
-		'Virtualizor',
+		'Dashboard',
 		array(
-			'name' => 'Virtualizor',
-			'label' => 'Virtualizor',
+			'name' => 'Dashboard',
+			'label' => 'Dashboard',
 			'order' => 99,
 			'icon' => 'fa-cubes',
 		)
 	);
 	$newMenu->addChild(
-		'Virtualizor',
+		'Dashboard',
 		array(
 			'name' => 'Enduser Panel',
 			'label' => 'Enduser Panel',
