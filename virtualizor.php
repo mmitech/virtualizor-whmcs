@@ -1,7 +1,7 @@
 <?php
 
-// Last Updated : 24/05/2024
-// Version : 2.7.2
+// Last Updated : 23/08/2024
+// Version : 2.8.0
 
 // Disable warning messages - in PHP 5.4
 //error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
@@ -112,7 +112,7 @@ function virtualizor_ConfigOptions() {
 		$virttype = (preg_match('/xen/is', $data['resources']['virt']) ? 'xen' : (preg_match('/xcp/is', $data['resources']['virt']) ? 'xcp' : strtolower($data['resources']['virt'])));
 		
 		$hvm = (preg_match('/hvm/is', $row['configoption2']) ? 1 : 0);
-		
+		$tmp_plans = [];
 		// Build the options list to show Plans
 		foreach($data['plans'] as $k => $v){
 			$tmp_plans[$v['plid']] = $v['plid'].' - '.$v['plan_name'];
@@ -2163,8 +2163,6 @@ class Virtualizor_Curl {
 		
 	}
 	public static function create_custom_field($pid, $serviceid, $field_data){
-
-		Virtualizor_Curl::fix_uuid_field();
 		
 		foreach($field_data as $fk => $fv){
 			
@@ -2223,8 +2221,6 @@ class Virtualizor_Curl {
 	}
 
 	public static function create_uuid_field($pid, $serviceid, $uuid){
-		
-		Virtualizor_Curl::fix_uuid_field();
 		
 		// vps_uuid of virtualizor
 		$query = Capsule::table('tblcustomfields')
@@ -2501,7 +2497,7 @@ class Virtualizor_Curl {
 
 function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=productdetails', $modules_url = 'modules/servers'){
 	
-	global $virt_action_display, $virt_errors, $virt_resp, $virtualizor_conf, $whmcsmysql;
+	global $virt_action_display, $virt_errors, $virt_resp, $virtualizor_conf, $whmcsmysql, $l;
 
 	$id = $params['customfields']['vpsid'];
 	
@@ -2547,12 +2543,14 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 		$var['giver'] = $url_prefix.'&id='.$params['serviceid'].'&';
 		$var['url'] = $url_prefix.'&id='.$params['serviceid'].'&';
 		$var['copyright'] = 'Virtualizor';
-		$var['version'] = '2.7.2';
+		$var['version'] = '2.8.0';
 		$var['logo'] = '';
 		$var['mob_logo'] = '';
+		$var['login_logo'] = '';
 		$var['theme'] = $modules_url.'/virtualizor/ui/';
 		$var['theme_path'] = dirname(__FILE__).'/ui/';
 		$var['images'] = $var['theme'].'images/';
+		$var['svg'] = $var['theme'].'images/svgset/';
 		$var['virt_dev_license'] = ' ';
 		$var['virt_pirated_license'] = ' ';
 		$var['theme_mode'] = (!empty($virtualizor_conf['theme_mode']) ? '&theme_mode='.$virtualizor_conf['theme_mode'].'&' : '&theme_mode='.$_COOKIE['virt_theme_mode'].'&');
@@ -2592,24 +2590,16 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 			$jspath = $var['theme_path'].'js2/';
 			$files = array('jquery.min.js',
 							'jquery.dataTables.min.js',
-							'jquery.tablesorter.min.js',
-							'jquery.flot.min.js',
-							'jquery.flot.pie.min.js',
-							'jquery.flot.stack.min.js',
-							'jquery.flot.time.min.js',
-							'jquery.flot.tooltip.min.js',
-							'jquery.flot.symbol.min.js',
-							'jquery.flot.axislabels.js',
-							'jquery.flot.selection.min.js',
-							'jquery.flot.resize.min.js',
+							'dataTables.tailwindcss.js',
 							'jquery.scrollbar.min.js',
-							'popper.min.js',
+							'apexcharts.min.js',
 							'select2.js',
-							'bootstrap.min.js',
-							'jquery.responsivetabs.js',
+							'countries.js',	
+							'jquery-simple-tree-table.js',
+							'flowbite.min.js',
+							'datepicker-full.min.js',
 							'virtualizor.js',
 							'haproxy.js',
-							'jquery-simple-tree-table.js',
 						);
 			
 			foreach($files as $k => $v){
@@ -2636,18 +2626,21 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 			$data = '';
 			$jspath = $var['theme_path'].'css2/';
 			$files = array('bootstrap.min.css',
+							'./fonts/inter/inter.css',
+							'flowbite.min.css',
+							'tailwind.css',
+							'apexcharts.css',
 							'all.min.css',
 							'jquery.dataTables.min.css',
 							'select2.css',
 							'jquery.scrollbar.css',
+							'billing.css',
 			);
 			$files['style'] = 'style.css';
 			
 			if(!empty($_REQUEST['theme_mode']) && $_REQUEST['theme_mode'] === 'dark'){
 				$files['style'] = 'style_dark.css';
 			}
-
-				
 			
 			foreach($files as $k => $v){
 				//echo $k.'<br>';
@@ -2863,9 +2856,41 @@ function load_virtpanel(){
 		myDiv.id = "virtualizor_load_div";
 	}
 	
-	myDiv.innerHTML = \'<center style="padding:10px; background-color: #FAFBD9;">Loading Panel options ...</center><br /><br /><br />\';
+	myDiv.innerHTML = \'<div class="progress-bar-value"></div><br /><br /><br />\';
 	
 	document.getElementById(divID).appendChild(myDiv);
+	
+	var loadingContainer = myDiv.querySelector(".progress-bar-value");
+	
+	// Apply styles to the progress-bar-value element
+	loadingContainer.style.width = "100%";
+	loadingContainer.style.height = "4px"; // Adjust height as needed
+	loadingContainer.style.backgroundColor = "#0075ff";
+	loadingContainer.style.animation = "indeterminateAnimation 2s infinite linear";
+	loadingContainer.style.transformOrigin = "0% 50%";
+
+
+	// Add the keyframes for the animation
+	var styleSheet = document.createElement("style");
+	styleSheet.type = "text/css";
+	styleSheet.innerText = `
+    		@keyframes indeterminateAnimation {
+            		0% {
+                		transform: translateX(0) scaleX(0);
+            		}
+            		40% {
+                		transform: translateX(0) scaleX(0.4);
+            		}
+            		100% {
+                		transform: translateX(100%) scaleX(0);
+            		}
+        	}
+        .progress-bar-value {
+            padding: 2px;
+            transform-origin: 0% 50%;
+        }
+    	`;
+    	document.head.appendChild(styleSheet);
 	
 	// If we get the div with virtualizor_manager then do not create new element
 	if(document.getElementById("virtualizor_manager")){
@@ -2878,6 +2903,7 @@ function load_virtpanel(){
 	iframe.width = "100%";
 	iframe.style.display = "none";
 	iframe.style.border = "none";
+	iframe.style.background = "#ffffff";
 	iframe.scrolling = "no";
 	iframe.src = "'.$url_prefix.'&id='.$params['serviceid'].'&give=index.html#act=vpsmanage";
 	document.getElementById(divID).appendChild(iframe);
@@ -2914,21 +2940,33 @@ function check_js_loaded(){
 };
 
 panel_checker = setInterval(check_js_loaded,1000);
-var start_ele = document.getElementById("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Start_VPS");
-var start_href = start_ele.getAttribute("href");
-start_ele.setAttribute("href", start_href+"&vtoken='.md5($_SESSION['tkval']).'");
+var start_avail = document.getElementsByClassName("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Start_VPS");
+if (start_avail.length > 0) {
+	var start_ele = document.getElementById("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Start_VPS");
+	var start_href = start_ele.getAttribute("href");
+	start_ele.setAttribute("href", start_href+"&vtoken='.md5($_SESSION['tkval']).'");
+}
 
-var stop_ele = document.getElementById("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Stop_VPS");
-var stop_href = stop_ele.getAttribute("href");
-stop_ele.setAttribute("href", stop_href+"&vtoken='.md5($_SESSION['tkval']).'");
+var stop_avail = document.getElementsByClassName("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Stop_VPS");
+if (stop_avail.length > 0) {
+	var stop_ele = document.getElementById("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Stop_VPS");
+	var stop_href = stop_ele.getAttribute("href");
+	stop_ele.setAttribute("href", stop_href+"&vtoken='.md5($_SESSION['tkval']).'");
+}
 
-var poweroff_ele = document.getElementById("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Poweroff_VPS");
-var poweroff_href = poweroff_ele.getAttribute("href");
-poweroff_ele.setAttribute("href", poweroff_href+"&vtoken='.md5($_SESSION['tkval']).'");
+var poweroff_avail = document.getElementsByClassName("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Poweroff_VPS");
+if (poweroff_avail.length > 0) {
+	var poweroff_ele = document.getElementById("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Poweroff_VPS");
+	var poweroff_href = poweroff_ele.getAttribute("href");
+	poweroff_ele.setAttribute("href", poweroff_href+"&vtoken='.md5($_SESSION['tkval']).'");
+}
 
-var restart_ele = document.getElementById("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Reboot_VPS");
-var restart_href = restart_ele.getAttribute("href");
-restart_ele.setAttribute("href", restart_href+"&vtoken='.md5($_SESSION['tkval']).'");
+var reboot_avail = document.getElementsByClassName("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Reboot_VPS");
+if (reboot_avail.length > 0) {
+	var restart_ele = document.getElementById("Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Reboot_VPS");
+	var restart_href = restart_ele.getAttribute("href");
+	restart_ele.setAttribute("href", restart_href+"&vtoken='.md5($_SESSION['tkval']).'");
+}
 </script>';
 
 	return $code;

@@ -45,6 +45,7 @@ $virtualizor_conf['fields']['cpu_percent'] = 'CPU Percent';
 $virtualizor_conf['fields']['total_iops_sec'] = 'Total I/Os per sec';
 $virtualizor_conf['fields']['read_bytes_sec'] = 'Read Mega Bytes/s';
 $virtualizor_conf['fields']['write_bytes_sec'] = 'Write Mega Bytes/s';
+$virtualizor_conf['fields']['upload_speed'] = 'Upload Speed (KB)';
 
 // Control Panel API Keys
 $virtualizor_conf['cp']['buy_cpanel_login'] = '';

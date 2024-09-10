@@ -20,7 +20,6 @@
 //===========================================================
 //////////////////////////////////////////////////////////////
 
-
 $l['privacy_policy'] = 'سیاست حفظ حریم خصوصی';
 $l['virt_openvz'] = 'OpenVZ';
 $l['virt_xen'] = 'Xen';
@@ -775,6 +774,9 @@ $l['act_adduser_plans'] = 'افزودن طرح کاربری';
 $l['act_edituser_plans'] = 'ویرایش برنامه های کاربر';
 $l['act_editinvoice'] = 'ویرایش فاکتور';
 $l['act_edittransaction'] = 'ویرایش تراکنش';
+$l['act_firewall_plans'] = 'List Firewall Plans';
+$l['act_addfirewall_plan'] = 'Add Firewall Plan';
+$l['act_editfirewall_plan'] = 'Edit Firewall Plan';
 
 $l['at_performed'] = 'اقدام انجام شد';
 $l['product_id'] = 'شناسه محصول';
@@ -813,3 +815,52 @@ $l['api_key'] = 'کلید API';
 $l['data_post'] = 'داده ارسال';
 $l['data_get'] = 'دریافت داده';
 $l['show_notify_logs'] = 'نمایش گزارش‌ها';
+
+//Firewall
+$l['decision'] = 'Decision' ;
+$l['decision_exp'] = 'Action to perform for the traffic';
+$l['direction'] = 'Direction' ;
+$l['Add_firewalls_rules'] = 'Add firewalls rules' ;
+$l['manage_firewall_rules'] = 'Manage firewall rules' ;
+$l['IN'] = 'IN' ;
+$l['OUT'] = 'OUT' ;
+$l['ACCEPT'] = 'ACCEPT' ;
+$l['DROP'] = 'DROP' ;
+$l['port'] = 'Port' ;
+$l['sport'] = 'S Port' ;
+$l['sport_exp'] = 'Source Port that you want to apply the rule';
+$l['dport'] = 'D Port' ;
+$l['dport_exp'] = 'Destination Port that you want to apply the rule';
+$l['CUSTOM'] = 'Custom' ;
+$l['ANYWHERE'] = 'Anywhere' ;
+$l['Ipv4'] = 'IPv4' ;
+$l['IPv6'] = 'IPv6' ;
+$l['firewall'] = 'Firewall' ;
+$l['iptype'] = 'IP Type' ;
+$l['protocol'] = 'Protocol' ;
+$l['protocol_exp'] = 'Type of protocol';
+$l['source'] = 'Source' ;
+$l['source_exp'] = 'You can specify individual ip(2.2.2.2) OR 0.0.0.0/0 (for all the ips)';
+$l['srno'] = '#' ;
+$l['Empty protocol field'] = 'Empty protocol field' ;
+$l['Need Direction Flow'] = 'Need Direction Flow' ;
+$l['Empty port'] = 'Empty port' ;
+$l['Empty source address'] = 'Empty source address' ;
+$l['reset'] = 'Reset' ;
+$l['update'] = 'Update' ;
+
+$l['add_rule_error'] = 'Please add rules then save them';
+$l['rules_exceed_limit'] = 'Firewall Plan cannot have more than <b>&soft-1;</b> rules';
+$l['invalid_source_port'] = 'Invalid Source Port <b>&soft-1;</b> specified in rule: </br>&soft-2;';
+$l['correct_port_info'] = 'Port values can range between 0 - 65535 or NONE';
+$l['invalid_destination_port'] = 'Invalid Destination Port <b>&soft-1;</b> specified in rule: </br>&soft-2;';
+$l['invalid_protocol'] = 'Invalid Protocol specified ';
+$l['invalid_decision'] = 'Invalid Decision specified ';
+$l['invalid_iptype'] = 'Invalid IP Type specified ';
+$l['invalid_direction'] = 'Invalid Direction specified ';
+$l['correct_ipv4_info'] = ' Please Specify valid IPv4 addresss or 0.0.0.0/0 for ALL ips';
+$l['no_port_specified'] = 'Source port and Destination port can have range between 0 - 65535 rule:';
+$l['port_number_is_specified'] = 'Source Port and Destination Port should be NONE for GRE, ESP, ICMP protocols';
+
+$l['enduser_vps_firewall_disabled'] = VM_SHORT.' Firewall is disabled';
+$l['bulk_enduser_vps_firewall_remove'] = 'Enduser firewall rules removed for multiple '.VM_SHORT;

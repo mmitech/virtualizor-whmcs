@@ -1,3 +1,7 @@
+[2.8.0][09-09-2024]
+- Added serid field once the VM is created.
+- Updated for MMITech
+
 [2.7.2][05-03-2024]
 - Added serid field once the VM is created.
 - Updated for MMITech

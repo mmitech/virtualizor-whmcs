@@ -20,7 +20,6 @@
 //===========================================================
 //////////////////////////////////////////////////////////////
 
-
 // سرتیتر
 $l['add'] = 'افزودن';
 $l['remove'] = 'حذف';
@@ -51,6 +50,7 @@ $l['close'] = 'بستن';
 $l['disk'] = 'دیسک';
 $l['time'] = 'زمان';
 $l['cpu'] = 'CPU';
+$l['misc'] = 'Miscellaneous Settings';
 $l['strength_indicator'] = 'نشانگر قدرت';
 $l['bad'] = 'بد';
 $l['good'] = 'خوب';
@@ -79,7 +79,7 @@ $l['in'] = 'در';
 $l['out'] = 'خارج';
 $l['usage'] = 'استفاده';
 $l['with_selected'] = 'با انتخاب شده:';
-$l['Jan'] = 'Jan';
+$l['jan'] = 'Jan';
 $l['Feb'] = 'بهمن';
 $l['mar'] = 'مارس';
 $l['apr'] = 'آوریل';
@@ -130,6 +130,15 @@ $l['days'] = 'روز(های)';
 $l['hours'] = 'ساعت(ساعت)';
 $l['minutes'] = 'دقیقه(ها)';
 $l['no_uid_in_vm'] = 'شناسه کاربر یافت نشد ، لطفاً به مدیر گزارش دهید تا تأیید کنید که آیا شما '.VM_SHORT.' دارای یک کاربر معتبر است که به آن اختصاص داده شده است یا نه';
+$l['gb'] = 'GB';
+$l['mb'] = 'MB';
+$l['core'] = 'Core';
+$l['storage'] = 'Storage';
+$l['alert'] = 'Alert';
+$l['confirm'] = 'Confirm';
+$l['prompt'] = 'Prompt';
+$l['vm_actions'] = VM_SHORT.' Actions';
+$l['networking'] = 'Networking';
 
 // زبان های مرتبط با جدول داده
 $l['to'] = 'به';
@@ -158,6 +167,8 @@ $l['vm_err_changing'] = 'در هنگام تغییر رمز عبور خطاهای
 $l['vm_no_nonalphanumeric'] = 'هیچ کاراکتر غیرالفبایی مجاز نیست';
 
 // رشته های تم
+$l['vm_region'] = 'Server / Region';
+$l['vm_config'] = VM_SHORT.' Configuration';
 $l['vm_vpsmanagement'] = VM_SHORT.' مدیریت';
 $l['vm_advoptions'] = 'گزینه های پیشرفته';
 $l['vm_lm_ssh'] = 'SSH';
@@ -356,6 +367,8 @@ $l['po_vps_poweroff'] = 'خاموش کردن';
 // رشته زبان کاربران - پیشوند : usr_
 $l['usr_page_head'] = 'کاربران';
 $l['usr_add_user'] = 'افزودن کاربر';
+$l['usr_add_user_email'] = 'New User Email';
+$l['usr_adu_pass'] = 'Password';
 $l['usr_del_not_allowed'] = 'شما مجاز به حذف این کاربر نیستید';
 $l['usr_del_conf'] = 'آیا مطمئن هستید که می خواهید کاربر را حذف کنید؟';
 $l['usr_no_users'] = 'هیچ کاربری وجود ندارد';
@@ -365,9 +378,9 @@ $l['usr_del_not_allowed_has_vps'] = 'کاربر vps دارد، لطفاً آنه
 // رشته lang apikey - پیشوند : apikey_
 $l['eapi_page_head'] = 'ویرایش اعتبار API';
 $l['eapi_page'] = 'ویرایش';
-$l['list_api_logs'] = 'نمایش گزارش های API';
+$l['list_api_logs'] = 'گزارش های API';
 $l['invalid_ip'] = 'IP نامعتبر';
-$l['api_page_head'] = 'فهرست اعتبار API';
+$l['api_page_head'] = 'API List';
 $l['pair_add_api'] = 'ایجاد اعتبار API';
 $l['apik_key_notice'] = 'آدرس IP را وارد کنید (با کاما برای چندین IP از هم جدا شده اند). اگر هیچ IP داده نشود، قانون جفت api برای همه آدرس‌های IP اعمال می‌شود. <br> <b>مثال:</b> 192.168.1.1, 192.168.1.2';
 $l['ip_addresses'] = 'آدرس IP در لیست سفید';
@@ -617,6 +630,7 @@ $l['os_select_os'] = 'انتخاب سیستم عامل:';
 $l['os_other'] = 'سایر';
 $l['os_format_primary'] = 'فقط دیسک اصلی را قالب بندی کنید';
 $l['os_format_primary_exp'] = 'در صورت علامت زدن، فقط داده‌های دیسک اولیه حذف خواهند شد';
+$l['os_set_new_pass'] = 'Password for OS after reinstallation';
 
 // رشته زبان vnc - پیشوند: vnc_
 $l['vnc_vnc_info'] = 'اطلاعات VNC';
@@ -654,6 +668,9 @@ $l['up_page_head'] = 'تغییر رمز عبور';
 $l['up_change_final'] = 'گذرواژه شما با موفقیت تغییر یافت';
 
 // رشته زبان پروفایل - پیشوند : pr_
+$l['personal_info'] = 'Personal Information';
+$l['contact_info'] = 'Contact Information';
+$l['administrative_info'] = 'Administrative Contact';
 $l['pr_change_profile'] = 'تغییر نمایه';
 $l['pr_no_fname'] = 'شما نام را وارد نکردید';
 $l['pr_no_lname'] = 'نام خانوادگی را وارد نکردید';
@@ -765,6 +782,7 @@ $l['mz_inv_name'] = 'نام میزبان نامعتبر مشخص شده است';
 $l['mz_inv_ip'] = 'آدرس IP نامعتبر مشخص شده است';
 $l['mz_inv_tld'] = 'دامنه سطح بالای نامعتبر مشخص شده است';
 $l['mz_inv_ipv6'] = 'IPv6 نامعتبر مشخص شده است';
+$l['mz_inv_srv'] = 'Invalid SRV format, Please used below format <br>"weight port target"<br>Example:<br>"80 443 hostname.example.com"';
 $l['mz_inv_int'] = 'عدد صحیح نامعتبر مشخص شده است';
 $l['mz_err_add'] = 'هنگام افزودن رکورد خطایی رخ داد';
 $l['mz_err_del'] = 'هنگام حذف رکورد خطایی رخ داد';
@@ -878,6 +896,11 @@ $l['resc_disable_rescue_err'] = 'حالت نجات توسط مدیر غیرفع�
 $l['resc_passwords_do_not_match'] = 'گذرواژه مشخص شده و رمز عبور تأیید مطابقت ندارند';
 
 // usersettings lang string - پیشوند: us_
+$l['lang_app_settings'] = 'Language and Appearance Settings';
+$l['site_iden_settings'] = 'Site Identity Settings';
+$l['usr_pref_limits'] = 'User Preferences and Limits';
+$l['leg_pol_settings'] = 'Legal and Policy Settings';
+$l['auth_methods'] = 'Authentication  Methods';
 $l['us_no_lang'] = 'هیچ زبانی انتخاب نشد';
 $l['us_wrong_lang'] = 'زبانی که انتخاب کردید وجود ندارد';
 $l['us_no_timezone'] = 'منطقه زمانی را انتخاب نکردید';
@@ -1016,8 +1039,8 @@ $l['li_no_vncpass'] = 'لطفا یک رمز عبور VNC را مشخص کنید'
 $l['li_no_bandwidth'] = 'لطفا پهنای باند را مشخص کنید';
 $l['li_no_cpu_units'] = 'لطفا واحدهای CPU را مشخص کنید';
 $l['li_no_cpu_cores'] = 'لطفا تعداد هسته ها را مشخص کنید';
-$l['li_cores_max'] = 'حداکثر هسته‌ها';
-$l['li_space_max'] = 'GB حداکثر';
+$l['li_cores_max'] = 'حداکثر هسته‌ها / '.VM_SHORT.'';
+$l['li_space_max'] = 'GB حداکثر / '.VM_SHORT.'';
 $l['li_invalid_sg'] = 'منطقه ای که انتخاب کردید نامعتبر است';
 $l['li_invalid_plid'] = 'طرح انتخابی شما نامعتبر است';
 $l['li_no_plid'] = 'هیچ طرحی انتخاب نشده است. لطفاً یک طرح معتبر انتخاب کنید.';
@@ -1100,6 +1123,7 @@ $l['li_rootpass_exp'] = 'رمز عبور کاربر اصلی / مدیر برنا
 $l['li_randpass'] = 'یک رمز عبور تصادفی دیگر ایجاد کنید';
 $l['li_hostname'] = 'نام میزبان';
 $l['li_hostname_exp'] = 'نام میزبان را برای '.VM_SHORT.' وارد کنید. به عنوان مثال www.domain.com';
+$l['li_vpscount_exp'] = 'If your '.VM_SHORT.' count is more than 10, then you will have to give a common hostname';
 $l['li_ip'] = 'آدرس IP';
 $l['li_ips'] = 'آدرس IP';
 $l['li_ips_exp'] = 'شما می توانید تعداد IP هایی را که باید اختصاص دهید مشخص کنید';
@@ -1239,6 +1263,7 @@ $l['li_invalid_plid'] = 'طرحی که ارسال کردید نامعتبر اس
 $l['li_install_app'] = 'نصب برنامه';
 $l['li_install_app_exp'] = 'توجه: Webuzo به عنوان یک کنترل پنل نصب خواهد شد';
 $l['li_insufficient_balance'] = 'شما موجودی کافی ندارید، <a href="#act=billing&tab=make_payment">لطفاً اکنون وجوه اضافه کنید</a>.';
+$l['li_lb_done'] = 'The Load Balancer has been created';
 
 $l['li_cpu_mode'] = 'حالت CPU';
 $l['li_cpu_mode_exp'] = 'حالت پردازنده';
@@ -1246,6 +1271,7 @@ $l['li_disable_ebtables'] = 'غیرفعال کردن ebtables';
 $l['li_disable_ebtables_exp'] = 'قوانین ebtables را غیرفعال کنید (این قوانین IP '.VM_SHORT.' را به آدرس MAC '.VM_SHORT.' NIC متصل می کند)';
 $l['li_rdp'] = 'فعال کردن RDP';
 $l['li_rdp_exp'] = 'فعال کردن اتصال از راه دور دسکتاپ (فقط برای ویندوز '.VM_SHORT.')';
+$l['li_invalid_setup_pending_request'] = 'Invalid request to complete the pending setup. Please contact your Administrator or support.';
 
 // رشته طولانی editvm - پیشوند : ei_
 $l['ei_page_head'] = 'ویرایش '.VM_SHORT;
@@ -1297,6 +1323,15 @@ $l['ei_vncpass_exp'] = 'رمز عبور VNC برای '.VM_SHORT.'. برای ای
 $l['ei_submit'] = 'ویرایش '.VM_LONG;
 $l['ei_done'] = ' '.VM_LONG.' با موفقیت ویرایش شده است';
 $l['ei_addvoption'] = 'گزینه های پیشرفته';
+$l['ei_system_info'] = 'System Information';
+$l['ei_access_details'] = 'Access Details';
+$l['ei_network_config'] = 'Network Configuration';
+$l['ei_resource_allocation'] = 'Resource Allocation';
+$l['ei_firwall_options'] = 'Firewall Options';
+
+$l['ei_user_options'] = 'User Options';
+$l['ei_system_resources'] = 'System Resources';
+$l['ei_adv_system_config'] = 'Enhanced System Configuration';
 $l['ei_no_uid'] = 'هیچ کاربری انتخاب نشد';
 $l['ei_no_nonalphanumeric'] = 'هیچ کاراکتر غیرالفبایی برای رمز عبور VNC مجاز نیست';
 $l['ei_less_space'] = 'شما فضای دیسک کافی برای ایجاد این '.VM_SHORT;
@@ -1384,6 +1419,9 @@ $l['bkup2_current_cycle'] = 'چرخه فعلی:';
 $l['bkup2_unlimited'] = 'نامحدود';
 
 // hvmsettings lang string - پیشوند: hvm_
+$l['virtualization_settings'] = 'Virtualization Settings';
+$l['system_config'] = 'System Configuration';
+$l['container_settings'] = 'Container Settings';
 $l['hvm_virt_error'] = 'این مجازی سازی تنظیمات HVM ندارد';
 $l['hvm_rescue_enabled'] = ''.VM_SHORT.' در حالت نجات است و قابل تغییر نیست.';
 $l['hvm_invalid_iso'] = 'ایزوی که انتخاب کردید نامعتبر است';
@@ -1398,7 +1436,8 @@ $l['hvm_boot_order'] = 'سفارش بوت';
 $l['hvm_isos'] = 'ایزو را انتخاب کنید';
 $l['hvm_none'] = 'هیچکدام';
 $l['hvm_tuntap_enable'] = 'فعال کردن Tun/Tap';
-$l['hvm_ppp_enable'] = 'فعال کردن PPP(پروتکل نقطه به نقطه)';
+$l['hvm_ppp_enable'] = 'Enable PPP';
+$l['hvm_ppp__info_enable'] = 'Point to Point Protocol';
 $l['hvm_disabled'] = 'تنظیمات HVM توسط ادمین غیرفعال شده است';
 $l['hvm_hdd'] = 'هارد دیسک';
 $l['hvm_cdrom'] = 'CD Drive';
@@ -1455,8 +1494,8 @@ $l['ram_header'] = 'رم';
 $l['ram_raminfo'] = 'اطلاعات رم';
 $l['ram_totalram'] = 'RAM : ';
 $l['ram_gaurated'] = 'رم تضمینی : ';
-$l['ram_burstable'] = 'قابل انفجار :';
-$l['ram_swap'] = 'SWAP :';
+$l['ram_burstable'] = 'قابل انفجار ';
+$l['ram_swap'] = 'SWAP ';
 $l['ram_utilised'] = 'استفاده شده :';
 $l['ram_percentram'] = '% استفاده :';
 $l['ram_graphheader'] = 'استفاده از RAM';
@@ -1591,6 +1630,7 @@ $l['tasks_delete_volume'] = 'حذف جلد';
 $l['tasks_resize_volume'] = 'تغییر اندازه حجم';
 $l['tasks_detach_volume'] = 'جدا کردن حجم';
 $l['tasks_hotplug_disk'] = 'حجم Hotplug';
+$l['tasks_install_ga'] = 'Installing Guest Agent';
 
 // ثبت رشته های زمین - پیشوند : reg_
 $l['reg_sec_inv'] = 'کد امنیتی نامعتبر است';
@@ -1601,6 +1641,8 @@ $l['pr_no_address'] = 'لطفا آدرس را مشخص کنید';
 $l['pr_no_city'] = 'لطفاً شهر را مشخص کنید';
 $l['pr_no_state'] = 'لطفاً وضعیت را مشخص کنید';
 $l['pr_no_zip'] = 'لطفا کد پستی را مشخص کنید';
+$l['pr_zip_exp'] = 'Zip code should contain only alphanumeric code, special charaters are not allowed';
+$l['pr_wrong_zip'] = 'Kindly check the zip code';
 $l['pr_no_country'] = 'لطفا کشور را مشخص کنید';
 $l['pr_no_city'] = 'لطفاً شهر را مشخص کنید';
 $l['pr_no_phone'] = 'لطفا شماره تلفن را مشخص کنید';
@@ -1724,6 +1766,7 @@ $l['reg_mobile_no'] = 'شماره تلفن همراه را برای OTP وارد
 $l['reg_err_key_url'] = 'کلید URL نمی تواند برای ارسال مجدد OTP خالی باشد';
 $l['reg_no_url_key'] = 'کلید URL ارائه شده را پیدا نکردم';
 $l['reg_contact_err'] = 'لطفا شماره تلفن 10 رقمی خود را وارد کنید';
+$l['reg_resend_otp_in'] = 'Resend OTP in :';
 
 // رشته زبان لاگین - پیشوند : login_
 $l['login_no_username'] = 'فیلد نام کاربری خالی بود';
@@ -1744,7 +1787,7 @@ $l['login_pass_nomatch'] = 'نام کاربری یا رمز عبوری که وا
 $l['login_forgotpass'] = 'فراموش کردن رمز عبور';
 $l['login_emailuser'] = 'آدرس ایمیل';
 $l['login_enteremail'] = 'ایمیل خود را وارد کنید';
-$l['login_sub_email'] = 'ارسال';
+$l['login_sub_email'] = 'Send Link';
 $l['login_no_email'] = 'آدرس ایمیل خود را ارسال نکردید';
 $l['login_invalidemail'] = 'آدرس ایمیلی که ارسال کردید نامعتبر است';
 $l['login_mail_sub'] = 'بازنشانی رمز عبور';
@@ -1778,6 +1821,7 @@ $l['login_forgot_pass'] = 'رمز عبور را فراموش کرده ام';
 $l['login_goto_login'] = 'برو به صفحه ورود';
 $l['login_no_2fa_key'] = 'کلید احراز هویت نامعتبر';
 $l['login_inv_user'] = 'کاربر نامعتبر';
+$l['login_signup'] = 'Do not have an account yet?';
 
 // OTP هنگام ورود
 $l['login_twofactit'] = '2FA';
@@ -1804,6 +1848,7 @@ $l['recipe_duplicate_err'] = 'شناسه(های) دستور العمل تکرا�
 $l['no_desc'] = 'بدون شرح';
 $l['ingredients'] = 'مواد تشکیل دهنده';
 $l['recipe'] = 'دستور پخت';
+$l['invalid_recipe_id'] = 'The Recipe you selected is invalid';
 $l['conf_execute'] = 'آیا مطمئن هستید که می خواهید این دستور پخت را بپزید؟';
 $l['rec_short_desc'] = 'دستور غذاها کدهای bash از پیش تعریف شده هستند';
 $l['no_recipes'] = 'دستور پختی وجود ندارد';
@@ -2139,6 +2184,7 @@ $l['modal_ok'] = 'بسیار خوب';
 $l['modal_cancel'] = 'لغو';
 $l['modal_success'] = 'موفقیت';
 $l['modal_error'] = 'خطا';
+$l['modal_warning'] = 'Warning';
 
 // خطاهای مربوط به شبکه و سرعت آپلود.
 $l['err_nw_speed'] = 'سرعت شبکه ای که وارد کرده اید بیشتر از سرعت مجاز شبکه است';
@@ -2317,3 +2363,111 @@ $l['select_lb_exp'] = 'Load Balancer is not supported for windows '.VM_SHORT;
 $l['vps_timezone_changed'] = '<br /> '.VM_SHORT.' Timezone Changed.';
 $l['vps_timezone_changed_with_recipe'] = '<br /> '.VM_SHORT.' Timezone will be changed after you SHUTDOWN and START the '.VM_SHORT.' from the panel.';
 $l['vps_timezone_change_err'] = 'Unable to change the '.VM_SHORT.' Timezone.';
+$l['user_suspended_3'] = 'Your current usage is {{total_usage}} while your balance is {{cur_bal}}. Please add funds to your account to unsuspend your account.';
+
+
+// recipe lang string - prefix : rcp_
+$l['rcp_page_head'] = 'Recipes';
+$l['rcp_add_recipes'] = 'Add Recipes';
+$l['rcp_del_conf'] = 'Are you sure you want to delete the Recipe ?';
+$l['rcp_no_recipes'] = 'There are no Recipes';
+$l['rcp_recipe_del'] = 'The Recipe has been deleted';
+$l['rcp_duplicate_recipe'] = 'Recipe name already exist';
+$l['rcp_no_recipescript'] = 'Recipe bash script was not entered';
+$l['rcp_invalid_shell'] = 'Invalid shell type chosen';
+
+// addrecipe lang string - prefix : adr_
+$l['adr_page_head'] = 'Add Recipe';
+$l['adr_done'] = 'Recipe has been added';
+$l['adr_recipe_name'] = 'Recipe Name';
+$l['adr_recipe_name_exp'] = 'Name of your recipe. This will be displayed.';
+$l['adr_recipe_shell'] = 'Shell Type';
+$l['adr_recipe_shell_exp'] = 'Choose the shell type using which the recipe should be executed, default will be Bash shell (for windows leave default)';
+$l['adr_recipe_logo'] = 'Recipe Logo';
+$l['adr_recipe_logo_exp'] = 'URL of the logo for your recipe. This field is optional.';
+$l['adr_recipe_code'] = 'Enter your Recipe';
+$l['adr_recipe_code_exp'] = 'Enter the actual bash code here.<br /> NOTE : #!/bin/sh will be added automatically, you do not have to add it.<br /></br />You can use the following variables in the recipe:<br /><strong>{{vpsid}}</strong> : '.VM_SHORT.' ID<br /><strong>{{vps_name}}</strong> : VID<br /><strong>{{vps_hostname}}</strong> : '.VM_SHORT.' Hostname<br /><strong>{{username}}</strong> : User Email<br /><strong>{{root_pass}}</strong> : Root Password<br /><strong>{{ips}}</strong> : IPv4 IPs<br /><strong>{{ips6}}</strong> : IPv6 IPs<br /><strong>{{ips6_subnet}}</strong> : IPv6 subnets<br />';
+$l['adr_recipe_desc'] = 'Description';
+$l['adr_recipe_desc_exp'] = 'Enter your recipe description here';
+$l['adr_recipe_exist'] = 'The user already exists. Please enter a different email';
+
+// editrecipe lang string - prefix : edr_
+$l['edr_rid_not_found'] = 'Recipe ID not found';
+$l['edr_page_head'] = 'Edit Recipe';
+$l['edr_done'] = 'Recipe has been edited';
+$l['edr_not_owned'] = 'Recipe not owned by you';
+
+//Developer License
+$l['dev_license'] = 'Dev License';
+$l['dev_license_info'] = 'This installation of VIRTUALIZOR is running under a Development License and is not authorized to be used for production use. Please report any cases of abuse to support@virtualizor.com';
+
+$l['account'] = 'Account';
+$l['last_login'] = 'Last Login';
+$l['cpu_freq'] = 'CPU Hz';
+$l['utilized'] = 'Utilized';
+$l['per_utilized'] = 'Utilization %';
+$l['seabios_option'] = 'SeaBios (Default)';
+$l['uefi_option'] = 'UEFI (OVMF)';
+$l['lamp'] = 'LAMP';
+$l['lemp'] = 'LEMP';
+$l['llmp'] = 'LLMP';
+
+$l['remove_old_ssh_keys'] = 'Remove old SSH Keys';
+$l['remove_old_ssh_keys'] = 'Remove old SSH Keys';
+$l['remove_old_ssh_keys_exp'] = 'If checked then old ssh-keys will be removed from the '.VM_SHORT;
+
+$l['enduser_firewall_is_disabled'] = 'Firewall Manegement is disabled by Admin';
+$l['enduser_vps_poweroff_is_disabled'] = VM_SHORT.' Power Off is disabled by Admin';
+
+// Pending Setup ps_
+$l['setup_completion_started'] = VM_SHORT.' setup completion started';
+$l['ps_setup_pending'] = 'Awaiting Setup for '.VM_SHORT;
+$l['ps_invalid_setup_pending_request'] = 'Setup request is invalid! Please check with Admin';
+$l['ps_click_to_complete_setup'] = 'Click here to complete the setup';
+$l['ps_setup_pending_notice'] = 'Your '.VM_SHORT.' is still pending setup';
+
+//Firewall
+$l['fw_plan_name'] = 'Plan name';
+$l['fw_name_exp'] = 'Please provide plan name';
+$l['fw_default_policy'] = 'Default Policy';
+$l['fw_default_policy_exp'] = 'Set the default policy for traffic. You can set the default as ACCEPT / DROP and as per this policy default traffic will be Allowed / Denied respectively.';
+$l['drop'] = 'DROP';
+$l['accept'] = 'ACCEPT';
+$l['fw_port_placeholder'] = 'NONE or PORT';
+$l['fw_rules'] = 'Rules';
+$l['fw_plan_exists'] = 'Firewall Plan already exists';
+$l['fw_invalid_ipv4'] = 'Invalid IPv4 address';
+$l['fw_err_empty_rules'] = 'Please add rules then save them';
+$l['fw_heading'] = 'Firewall';
+$l['fw_edit'] = 'Edit Firewall';
+$l['fw_no_plan_change'] = 'No firewall plan selected';
+$l['fw_add_plan'] = 'Add Firewall Plan';
+$l['fw_list_plans'] = 'Firewall Plans';
+$l['fw_list_plans_exp'] = 'Select a firewall Plan';
+$l['fw_plan_added'] = 'Firewall Plan added successfully';
+$l['fw_plan_edited'] = 'Firewall Plan edited successfully';
+$l['fw_no_plans'] = 'No Firewall Plans';	
+$l['fw_delete'] = 'Firewall Plan deleted successfully';
+$l['unable_remove_firewall'] = 'Unable to remove firewall rules from '.VM_SHORT;
+$l['unable_apply_firewall'] = 'Unable to apply firewall rules for '.VM_SHORT;
+$l['fw_del_confirm']  = 'Are you sure you want to delete this Plan ?';
+$l['fw_no_plan_name'] = 'Plan name not specified';
+$l['fw_no_plan_selected'] = 'No plan selected';
+$l['fw_change_plan'] = 'Change Firewall Plan';
+$l['fw_direction_exp'] = 'Traffic direction';
+$l['fw_iptype_exp'] = 'IP version';
+$l['fw_no_rules_added'] = 'No rules added';
+$l['fw_invalid'] = 'Invalid Firewall Plan';
+$l['fw_change_plan_warn'] = 'Are you sure you want to change Firewall Plan?';
+$l['fw_remove_plan'] = 'Are you sure you want to remove Firewall rules?';
+$l['fw_rules_removed'] = 'Firewall rules removed successfully';
+$l['fw_plan_changed'] = 'Firewall Plan changed successfully';
+$l['fw_no_protocol'] = 'Please select the Protocol';
+$l['fw_need_direction'] = 'Please select the Direction (i.e. IN/OUT)';
+$l['fw_empty_sport'] = 'Source Port can not be empty';
+$l['fw_empty_dport'] = 'Destination Port can not be empty';
+$l['fw_empty_source_addr'] = 'Source/IP Address can not be empty';
+$l['user_suspended_3'] = 'Your current usage is {{total_usage}} while your balance is {{cur_bal}}. Please add funds to your account to unsuspend your account.';
+$l['not_allowed_ips_by_admin'] = 'Admin has restricted following IP(s) to be added in firewall rule: {{ips}}';
+$l['not_allowed_sports_by_admin'] = 'Admin has restricted following Source Port(s) to be added in firewall rule: {{sports}}';
+$l['not_allowed_dports_by_admin'] = 'Admin has restricted following Destination Port(s) to be added in firewall rule: {{dports}}';

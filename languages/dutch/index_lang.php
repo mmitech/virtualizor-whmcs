@@ -20,8 +20,6 @@
 //===========================================================
 //////////////////////////////////////////////////////////////
 
-
-
 $l['privacy_policy'] = 'Privacybeleid';
 $l['virt_openvz'] = 'OpenVZ';
 $l['virt_xen'] = 'Xen';
@@ -319,7 +317,7 @@ $l['failed_connect_proxmox'] = 'Failed to make proxmox api call. Please enter pr
 $l['speed_cap_down'] = 'Capped Download Speed ';
 $l['exp_speed_cap_down'] = 'Download speed after the bandwidth is overused for a '.VM_SHORT.', 0 or emtpy value indicates no capping';
 $l['speed_cap_up'] = 'Capped Upload Speed ';
-$l['exp_speed_cap_up'] = 'Upload speed after the bandwidth is overused for a '.VM_SHORT.', 0 or emtpy value indicates no capping';
+$l['exp_speed_cap_up'] = 'Upload speed after the bandwidth is overused for a '.VM_SHORT.'.<br /> If '.VM_SHORT.' upload speed -1 then  Capped upload speed will be same as <b>Capped Download Speed</b><br />0 or emtpy value indicates no capping';
 $l['admin_iso'] = 'Admin ISOs';
 $l['eu_iso'] = 'Enduser ISOs';
 $l['enable_billing'] = 'The Billing setting is disabled. Please enable that first from the <a href=\"act=billing		\">Billing Settings</a>.';
@@ -716,6 +714,9 @@ $l['act_adduser_plans'] = 'Add User Plan';
 $l['act_edituser_plans'] = 'Edit User Plans';
 $l['act_editinvoice'] = 'Edit Invoice';
 $l['act_edittransaction'] = 'Edit Transaction';
+$l['act_firewall_plans'] = 'List Firewall Plans';
+$l['act_addfirewall_plan'] = 'Add Firewall Plan';
+$l['act_editfirewall_plan'] = 'Edit Firewall Plan';
 $l['act_load_balancer'] = 'Load Balancer';
 $l['act_manage_load_balancer'] = 'Manage Load Balancer';
 $l['lm_load_balancer'] = 'Load Balancer';
@@ -756,3 +757,54 @@ $l['api_key'] = 'API Key';
 $l['data_post'] = 'Post data';
 $l['data_get'] = 'Get data';
 $l['show_notify_logs'] = 'Show Logs';
+
+//Firewall
+$l['decision'] = 'Decision' ;
+$l['decision_exp'] = 'Action to perform for the traffic';
+$l['direction'] = 'Direction' ;
+$l['Add_firewalls_rules'] = 'Add firewalls rules' ;
+$l['manage_firewall_rules'] = 'Manage firewall rules' ;
+$l['IN'] = 'IN' ;
+$l['OUT'] = 'OUT' ;
+$l['ACCEPT'] = 'ACCEPT' ;
+$l['DROP'] = 'DROP' ;
+$l['port'] = 'Port' ;
+$l['sport'] = 'S Port' ;
+$l['sport_exp'] = 'Source Port that you want to apply the rule';
+$l['dport'] = 'D Port' ;
+$l['dport_exp'] = 'Destination Port that you want to apply the rule';
+$l['CUSTOM'] = 'Custom' ;
+$l['ANYWHERE'] = 'Anywhere' ;
+$l['Ipv4'] = 'IPv4' ;
+$l['IPv6'] = 'IPv6' ;
+$l['firewall'] = 'Firewall' ;
+$l['iptype'] = 'IP Type' ;
+$l['protocol'] = 'Protocol' ;
+$l['protocol_exp'] = 'Type of protocol';
+$l['source'] = 'Source' ;
+$l['source_exp'] = 'You can specify individual ip(2.2.2.2) OR 0.0.0.0/0 (for all the ips)';
+$l['srno'] = '#' ;
+$l['Empty protocol field'] = 'Empty protocol field' ;
+$l['Need Direction Flow'] = 'Need Direction Flow' ;
+$l['Empty port'] = 'Empty port' ;
+$l['Empty source address'] = 'Empty source address' ;
+$l['reset'] = 'Reset' ;
+$l['update'] = 'Update' ;
+$l['Invalid_IPv4'] = 'Invalid IPv4 address';
+
+$l['add_rule_error'] = 'Please add rules then save them';
+$l['rules_exceed_limit'] = 'Firewall Plan cannot have more than <b>&soft-1;</b> rules';
+$l['invalid_source_port'] = 'Invalid Source Port <b>&soft-1;</b> specified in rule: </br>&soft-2;';
+$l['correct_port_info'] = 'Port values can range between 0 - 65535 or NONE';
+$l['invalid_destination_port'] = 'Invalid Destination Port <b>&soft-1;</b> specified in rule: </br>&soft-2;';
+$l['invalid_protocol'] = 'Invalid Protocol specified ';
+$l['invalid_decision'] = 'Invalid Decision specified ';
+$l['invalid_iptype'] = 'Invalid IP Type specified ';
+$l['invalid_direction'] = 'Invalid Direction specified ';
+$l['correct_ipv4_info'] = ' Please Specify valid IPv4 addresss or 0.0.0.0/0 for ALL ips';
+$l['no_port_specified'] = 'Source port and Destination port can have range between 0 - 65535 rule:';
+$l['port_number_is_specified'] = 'Source Port and Destination Port should be NONE for GRE, ESP, ICMP protocols';
+
+$l['err_umount_volume'] = 'There was some error in unmounting volume in '.VM_SHORT;
+$l['enduser_vps_firewall_disabled'] = VM_SHORT.' Firewall is disabled';
+$l['bulk_enduser_vps_firewall_remove'] = 'Enduser firewall rules removed for multiple '.VM_SHORT;
