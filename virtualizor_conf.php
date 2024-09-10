@@ -114,7 +114,7 @@ $virtualizor_conf['bandwidth_overusage_charge'] = 0;
 
 // Custom language set by the clients
 // Value must be the matched by the individual language folder in the module
-$virtualizor_conf['default_language'] = '';
+$virtualizor_conf['default_language'] = 'english';
 $virtualizor_conf['enable_admin_sso'] = 0;
 
 // If set to 1, then it will create "serid" custom field which will store the server ID where the VM is provisioned
