@@ -114,19 +114,22 @@ $virtualizor_conf['bandwidth_overusage_charge'] = 0;
 
 // Custom language set by the clients
 // Value must be the matched by the individual language folder in the module
-$virtualizor_conf['default_language'] = 'english';
+$virtualizor_conf['default_language'] = '';
 $virtualizor_conf['enable_admin_sso'] = 0;
 
 // If set to 1, then it will create "serid" custom field which will store the server ID where the VM is provisioned
 $virtualizor_conf['add_serid_custom_field'] = 0;
 
 // To force the theme mode. Values will be light/dark. By default it will be blank, if its blank then user can set theme by clicking on icon
-$virtualizor_conf['theme_mode'] = 'light';
+$virtualizor_conf['theme_mode'] = 'dark';
 
 // Set the alias for VPS 
 $virtualizor_conf['vm_short'] = '';
 
 // Set the alias for VPS server
 $virtualizor_conf['vm_long'] = '';
+
+// Disable setup wizard
+$virtualizor_conf['disable_setup_wizard'] = 1;
 
 ?>

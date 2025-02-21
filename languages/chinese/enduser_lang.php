@@ -197,6 +197,7 @@ $l['vm_lm_support'] = '支持';
 $l['vm_lv_status'] = '状态';
 $l['vm_lm_manage_subnet'] = '管理 IPv6 子网';
 $l['vm_lm_console'] = '串行控制台';
+$l['vm_lm_change_firewall_plan'] = '更改防火墙计划';
 $l['vm_tip_startstop'] = '开/关 '.VM_SHORT;
 $l['vm_tip_restart'] = '重启 '.VM_SHORT;
 $l['vm_tip_poweroff'] = '拔 '.VM_SHORT.' 电源';

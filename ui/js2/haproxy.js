@@ -434,7 +434,7 @@ function processaddvdfform(self){
 				}
 			}
 			
-			str = "<label class='form-label' for='src_hostname' >{{vdf_src_hname}}</label><select class=\"form-control\" id=\"src_hostname\" name=\"src_hostname\">";
+			str = "<label class='virt-label whitespace-nowrap' for='src_hostname' >{{vdf_src_hname}}</label><select class=\"virt-select\" id=\"src_hostname\" name=\"src_hostname\">";
 			str += "<option value=\"-1\">{{vdf_select_ip}}</option>";
 			$.each($arr_src_ips, function(i,t){
 				str += "<option value=\""+t+"\">"+t+"</option>";
@@ -446,7 +446,7 @@ function processaddvdfform(self){
 			
 		// https or http
 		}else{
-			str = "<label class='form-label' for='src_hostname' >{{vdf_src_hname}}</label><input type=\"text\" id=\"src_hostname\" class=\"form-control w-100\" name=\"src_hostname\"/>";
+			str = "<label class='virt-label whitespace-nowrap' for='src_hostname' >{{vdf_src_hname}}</label><input type=\"text\" id=\"src_hostname\" class=\"virt-input text-md\" name=\"src_hostname\"/>";
 			if($(self).val() == "HTTP"){
 				$("#src_port").val("80");
 				$("#dest_port").val("80");

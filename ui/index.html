@@ -9,7 +9,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>[[site_name]]</title>
-	<link rel="stylesheet" type="text/css" href="[[theme]]/css2/givecss.php?[[version]]&[[patch]][[theme_mode]]"
+	<link rel="stylesheet" type="text/css" href="[[giver]]give=style.css&[[version]]&[[patch]]"
 		id="theme_mode" />
 	<link rel="shortcut icon" href="[[favicon_url]]" />
 	<script language="javascript" src="[[giver]]give=combined.js&[[version]]&[[patch]]" type="text/javascript"></script>
@@ -82,7 +82,6 @@
 		<div id="mainwindow" class="windows hidden">
 			<div class="absolute top-3 right-5 p-3 rounded-lg bg-gradient-to-r from-[#f1f8ff] to-[#f9fcff] dark:from-[#0f1730] dark:to-[#101429] border border-[#eef1f5] dark:border-gray-800 z-50">				
 				<div class="flex rounded-lg items-center justify-center gap-3">
-					<label class="vm_status_suspended" id="orig_uid" style="display:none;">{{you_are_admin}}</label>
 					<div id="suspended" class="notice justify-center items-center" style="display:none;"></div>
 					<div id="suspend_div" class="notice justify-center items-center hidden"></div>
 					<div class="vps-desc-status ">
@@ -201,19 +200,19 @@
 					</button>
 					<div class="flex flex-col gap-2 py-3 pr-3 w-44">
 						<button
-							class="flex items-center gap-2 bg-[#F4F6F8] dark:bg-[#252C48] px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap" onclick='show_self_shutdown_window(0);' id="self_shutdown">
+							class="flex items-center gap-2 bg-[#F4F6F8] dark:bg-[#252C48] px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap" onclick="show_self_shutdown_window(0);" id="self_shutdown-cell">
 							<i class="fas fa-clock fa-1x"></i>
 							{{lm_self_shutdown}}
 						</button>
-						<button class="flex items-center gap-2 bg-[#F4F6F8] dark:bg-[#252C48] px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap" onclick='show_managevdf_window();'>
+						<button class="flex items-center gap-2 bg-[#F4F6F8] dark:bg-[#252C48] px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap" onclick="show_managevdf_window();" id="managevdf-cell">
 							<i class="fas fa-share fa-1x"></i>
 							{{vm_lm_managevdf}}
 						</button>
-						<button class="flex items-center gap-2 bg-[#F4F6F8] dark:bg-[#252C48] px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap" onclick='show_processes_window(1);' id="proc-cell">
+						<button class="flex items-center gap-2 bg-[#F4F6F8] dark:bg-[#252C48] px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap" onclick="show_processes_window(1);" id="proc-cell">
 							<i class="fas fa-layer-group fa-1x"></i>
 							{{lm_process}}
 						</button>
-						<button class="flex items-center gap-2 bg-[#F4F6F8] dark:bg-[#252C48] px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap" onclick='show_system_alerts_window();' id="alerts-cell">
+						<button class="flex items-center gap-2 bg-[#F4F6F8] dark:bg-[#252C48] px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap" onclick="show_system_alerts_window();" id="alerts-cell">
 							<i class="fas fa-exclamation-circle"></i>
 							{{lm_res_a}}
 						</button>
@@ -587,7 +586,7 @@
 											<div id="network_speed_holder1" class="m-4 relative"></div>
 										</div>
 										<!-- Account card -->
-										<div class="virt-border-shadow">
+										<div class="virt-border-shadow" id="account-card">
 											<div class="card-head">
 												<h3 class="font-medium">{{account}}</h3>
 											</div>
@@ -997,37 +996,47 @@
 											<option value="sshkeys">{{vm_lm_sshkeys}}</option>
 											<option value="vncdetail">{{vm_lm_vnc}}</option>
 											<option value="console">{{vm_lm_console}}</option>
+											<option value="enduser_iso">{{lm_euiso}}</option>
 										</select>
 									</div>
 									<!-- <ul class="lg:flex-col xl:flex-col md:hidden sm:hidden space-y space-y-1 text-sm font-medium md:me-4 mb-4 md:mb-0 w-1/5" data-tabs-toggle="#settings-default-tab-content" role="tablist"> -->
 									<ul class="hidden lg:block md:flex xl:flex flex-col space-y-1 text-sm font-medium md:me-4 mb-4 md:mb-0 w-1/5" data-tabs-toggle="#settings-default-tab-content" role="tablist">
 										<li role="presentation">
-											<button class="vertical_left_tab" id="hostname-tab" data-tabs-target="#hostname" role="tab" aria-controls="hostname" aria-selected="false" onclick="show_hostname();">{{hn_submit_button}}</button>
+											<button class="vertical_left_tab vps_settings-tab-button" id="hostname" onclick="showtab(this.id, 'vps_settings', 'show_hostname');">{{hn_submit_button}}</button>
 										</li>
 										<li role="presentation">
-											<button class="vertical_left_tab" id="changepass-tab" data-tabs-target="#changepass" role="tab" aria-controls="changepass" aria-selected="false" onclick="show_changepassform();">{{vm_lm_changepass}}</button>
+											<button class="vertical_left_tab vps_settings-tab-button" id="changepass" onclick="showtab(this.id, 'vps_settings', 'show_changepassform');">{{vm_lm_changepass}}</button>
 										</li>
 										<li role="presentation">
-											<button class="vertical_left_tab" id="hvmsettings-tab" data-tabs-target="#hvmsettings" role="tab" onclick="show_hvmsetting_window();">{{vm_lm_hvmsettings}}</button>
-										</li>
-										<!-- <li role="presentation">
-											<button class="vertical_left_tab" id="ssh_lm-tab" data-tabs-target="#ssh_lm" onclick="show_ssh_window(0);" role="tab">{{vm_lm_ssh}}</button>
-										</li> -->
-										<li role="presentation">
-											<button class="vertical_left_tab" id="sshkeys-tab" data-tabs-target="#sshkeys" onclick="show_sshkeys_window();" role="tab">{{vm_lm_sshkeys}}</button>
-										</li>
-										<li role="presentation">
-											<button class="vertical_left_tab" id="vncdetail-tab" data-tabs-target="#vncdetail"  onclick="show_vnc_window(0);" role="tab">{{vm_lm_vnc}}</button>
+											<button class="vertical_left_tab vps_settings-tab-button" id="hvmsettings" onclick="showtab(this.id, 'vps_settings', 'show_hvmsetting_window');">{{vm_lm_hvmsettings}}</button>
 										</li>
 										<!-- <li role="presentation">
-											<button class="vertical_left_tab" id="vncpass-tab" data-tabs-target="#vncpass" role="tab">{{vm_lm_vncpass}}</button>
+											<button class="vertical_left_tab vps_settings-tab-button" id="ssh_lm-tab" onclick="showtab(this.id, 'vps_settings', 'show_ssh_window');">{{vm_lm_ssh}}</button>
 										</li> -->
 										<li role="presentation">
-											<button class="vertical_left_tab" id="console-tab" onclick="show_console_window();" data-tabs-target="#console" role="tab">{{vm_lm_console}}</button>
+											<button class="vertical_left_tab vps_settings-tab-button" id="sshkeys-cell" onclick="showtab(this.id, 'vps_settings', 'show_sshkeys_window');">{{vm_lm_sshkeys}}</button>
+										</li>
+										<li role="presentation">
+											<button class="vertical_left_tab vps_settings-tab-button" id="vncdetail" onclick="showtab(this.id, 'vps_settings', 'show_vnc_window');">{{vm_lm_vnc}}</button>
+										</li>
+										<!-- <li role="presentation">
+											<button class="vertical_left_tab vps_settings-tab-button" id="vncpass-tab" data-tabs-target="#vncpass">{{vm_lm_vncpass}}</button>
+										</li> -->
+										<li role="presentation">
+											<button class="vertical_left_tab vps_settings-tab-button" id="console" onclick="showtab(this.id, 'vps_settings', 'show_console_window');">{{vm_lm_console}}</button>
+										</li>
+										<li role="presentation">
+											<button class="vertical_left_tab vps_settings-tab-button !hidden" id="enduser_iso" onclick="showtab(this.id, 'vps_settings', 'euiso_onload');showtab('enduser_listiso', 'enduser_iso-tab-content', 'euiso_onload');">{{lm_euiso}}</button>
+										</li>
+										<li role="presentation">
+											<button class="vertical_left_tab vps_settings-tab-button !hidden" id="enduser_sshkeys">{{sshkey_list}}</button>
+										</li>
+										<li role="presentation">
+											<button class="vertical_left_tab vps_settings-tab-button !hidden" id="enduser_sshkeys_edit">{{sshkey_edit}}</button>
 										</li>
 									</ul>
 									<div id="settings-default-tab-content" class="w-full">
-										<div class="vps_settings hidden bg" id="hostname" role="tabpanel" aria-labelledby="hostname-tab" >
+										<div class="vps_settings hidden bg" id="hostname-tab" >
 											<main class="lg:p-5 p-3">
 												<div class="flex gap-3">
 													<p class="  ">{{hn_current_hostname}} :</p>
@@ -1049,7 +1058,7 @@
 												</div>
 											</main>
 										</div>
-										<div class="vps_settings hidden bg" id="changepass" role="tabpanel" aria-labelledby="changepass-tab" >
+										<div class="vps_settings hidden bg" id="changepass-tab">
 											<main class="lg:p-5 p-3">
 												<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
 													<div class="virt-border-shadow">
@@ -1082,30 +1091,36 @@
 												</div>
 											</main>
 										</div>
-										<div class="vps_settings hidden bg" id="hvmsettings" role="tabpanel" aria-labelledby="hvmsettings-tab" >
+										<div class="vps_settings hidden bg" id="hvmsettings-tab">
 											<main class="lg:p-5 p-3">
 												<form id="hvmsettingsform" accept-charset="UTF-8" action="" method="post" name="hvmsettings" onsubmit="return submitit('hvmsettingsform','hvm_sumbit_response');">
 													<h6 class="virt-form-head">{{virtualization_settings}}</h6>
 													<div class="grid w-full xl:grid-cols-3 lg:grid-cols-3 md:w-full px-2">
 														<div id="hvm_virtio_tr" class="checkbox-holder !hidden">
-															<div class="col-span-2">
-																<label for="hvm_enable_virtio" class="virt-label">{{hvm_enable_virtio}}</label>
-															</div>
-															<input type="checkbox" name="virtio" id="hvm_enable_virtio" class="virt-toggle-switch">
+															<label class="virt-label flex">
+																{{hvm_enable_virtio}}
+																<input type="checkbox" name="virtio" id="hvm_enable_virtio" class="appearance-none peer">
+																<span class="virt-toggle-switch"></span>
+															</label>
 														</div>
 														<div id="hvm_vga_tr" class="checkbox-holder !hidden">
 															<div class="col-span-2">
-																<label for="hvm_enable_vga" class="virt-label">{{hvm_enable_vga}}</label>
+																<label class="virt-label flex">
+																	{{hvm_enable_vga}}
+																	<input type="checkbox" name="kvm_vga" id="hvm_enable_vga" class="appearance-none peer">
+																	<span class="virt-toggle-switch"></span>
+																</label>
 															</div>
-															<input type="checkbox" name="kvm_vga" id="hvm_enable_vga" class="virt-toggle-switch">
 														</div>
 														<div id="hvm_enable_acceleration_tr" class="checkbox-holder !hidden">
 															<div class="col-span-2">
-																<label for="hvm_enable_acceleration" class="virt-label">{{hvm_enable_acceleration}}
-																	<span class="info-text" tooltip="{{hvm_enable_acceleration_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																<label class="virt-label flex" for="hvm_enable_acceleration">
+																	{{hvm_enable_acceleration}}
+																	<input type="checkbox" name="acceleration" id="hvm_enable_acceleration"  class="appearance-none peer">
+																	<span class="virt-toggle-switch"></span>
 																</label>
 															</div>
-															<input type="checkbox" name="acceleration" id="hvm_enable_acceleration"  class="virt-toggle-switch">
+															
 														</div>
 														<div id="hvm_nic_type_tr" class="grid grid-cols-2 gap-4 mb-5 hidden">
 															<div class="col-span-2">
@@ -1126,27 +1141,39 @@
 														<div class="row-span-4">
 															<div id="acpi_tr" class="checkbox-holder">
 																<div class="col-span-2">
-																	<label for="acpi" class="virt-label">{{hvm_acpi}}</label>
+																	<label class="virt-label flex" for="acpi">
+																		{{hvm_acpi}}
+																		<input id="acpi" type="checkbox" name="acpi" class="appearance-none peer"/>
+																		<span class="virt-toggle-switch"></span>
+																	</label>
 																</div>
-																<input id="acpi" type="checkbox" name="acpi" class="virt-toggle-switch"/>
 															</div>
 															<div id="apic_tr" class="checkbox-holder">
 																<div class="col-span-2">
-																	<label for="apic" class="virt-label">{{hvm_apic}}</label>
+																	<label class="virt-label flex" for="apic">
+																		{{hvm_apic}}
+																		<input id="apic" type="checkbox" name="apic" class="appearance-none peer"/>
+																		<span class="virt-toggle-switch"></span>
+																	</label>
 																</div>
-																<input id="apic" type="checkbox" name="apic" class="virt-toggle-switch"/>
 															</div>
 															<div id="vnc_tr" class="checkbox-holder">
 																<div class="col-span-2">
-																	<label for="hvm_vnc" class="virt-label">{{hvm_vnc}}</label>
+																	<label class="virt-label flex" for="hvm_vnc">
+																		{{hvm_vnc}}
+																		<input type="checkbox" name="vnc" id="hvm_vnc" class="appearance-none peer">
+																		<span class="virt-toggle-switch"></span>
+																	</label>
 																</div>
-																<input type="checkbox" name="vnc" id="hvm_vnc" class="virt-toggle-switch">
 															</div>
 															<div id="rtc_tr" class="checkbox-holder">
 																<div class="col-span-2">
-																	<label for="rtc" class="virt-label">{{rtc_label}}</label>
+																	<label class="virt-label flex" for="rtc">
+																		{{rtc_label}}
+																		<input id="rtc" type="checkbox" name="rtc" class="appearance-none peer"/>
+																		<span class="virt-toggle-switch"></span>
+																	</label>
 																</div>
-																<input id="rtc" type="checkbox" name="rtc" class="virt-toggle-switch"/>
 															</div>
 															<div id="boot_reorder_pos_tr">
 																<div>
@@ -1167,16 +1194,6 @@
 																	</div>
 																</div>
 															</div>
-															<div id="hvm_nic_type_tr" class="w-full lg:w-5/6 md:w-5/6">
-																<div class="relative">
-																	<label for="hvm_nic_type" class="virt-label">{{hvm_nic_type}}
-																		<span class="info-text" tooltip="{{hvm_nic_type_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
-																	</label>
-																	<div class="items-center my-1">
-																		<select class="select2 virt-select" name="nic_type" id="hvm_nic_type"></select>
-																	</div>
-																</div>
-															</div>
 															<div id="hvm_isos_tr" class="w-full lg:w-5/6 md:w-5/6 gap-3">
 																<div class="relative group">
 																	<label for="hvm_isos" class="virt-label">{{hvm_isos}}</label>
@@ -1184,12 +1201,12 @@
 																		<select class="select2 virt-select" name="isos" id="hvm_isos"></select>
 																		<div class="input-group-append eu_iso" style="display:none;"></div>
 																		<span class="px-2">
-																			<a href="javascript:void(0);" onclick="loadpage('act=euiso&tab=add-iso');">
+																			<a href="javascript:void(0);" onclick="showtab('enduser_iso', 'vps_settings', 'euiso_onload');showtab('enduser_addiso', 'enduser_iso-tab-content');">
 																				<i class="fas fa-plus-circle fa-1x" alt="{{hvm_addiso}}" title="{{hvm_addiso}}"></i>
 																			</a>
 																		</span>
 																		<span class="px-2">
-																			<a href="javascript:void(0);" onclick="loadpage('act=euiso');">
+																			<a href="javascript:void(0);" onclick="showtab('enduser_iso', 'vps_settings', 'euiso_onload');showtab('enduser_listiso', 'enduser_iso-tab-content');">
 																				<i class="fas fa-list-alt fa-1x" alt="{{hvm_listiso}}" title="{{hvm_listiso}}"></i>
 																			</a>
 																		</span>
@@ -1205,12 +1222,12 @@
 																		<select class="select2 virt-select" name="sec_iso" id="hvm_sec_iso"></select>
 																		<div class="input-group-append eu_iso" style="display:none;"></div>
 																		<span class="px-2">
-																			<a href="javascript:void(0);" onclick="loadpage('act=euiso&tab=add-iso');">
+																			<a href="javascript:void(0);" onclick="showtab('enduser_iso', 'vps_settings', 'euiso_onload');showtab('enduser_addiso', 'enduser_iso-tab-content');">
 																				<i class="fas fa-plus-circle fa-1x" alt="{{hvm_addiso}}" title="{{hvm_addiso}}"></i>
 																			</a>
 																		</span>
 																		<span class="px-2">
-																			<a href="javascript:void(0);" onclick="loadpage('act=euiso');">
+																			<a href="javascript:void(0);" onclick="showtab('enduser_iso', 'vps_settings', 'euiso_onload');showtab('enduser_listiso', 'enduser_iso-tab-content');">
 																				<i class="fas fa-list-alt fa-1x" alt="{{hvm_listiso}}" title="{{hvm_listiso}}"></i>
 																			</a>
 																		</span>
@@ -1229,33 +1246,36 @@
 															</div>
 														</div>
 													</div>
-													<div id="container_settings" class="hidden">
+													<div id="container_settings">
 														<hr class="my-2 border-b-1 border-[#0075FF]">
 														<h6 class="virt-form-head mt-4">{{container_settings}}</h6>
 														<div class="grid w-full xl:grid-cols-3 lg:grid-cols-3 md:w-full px-2">
 															<div id="hvm_fuse_tr" class="checkbox-holder">
 																<div class="col-span-2">
-																	<label for="hvm_fuse" class="virt-label">{{hvm_fuse}}
-																		<span class="info-text" tooltip="{{hvm_fuse_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																	<label class="virt-label flex" for="hvm_fuse">
+																		{{hvm_fuse}}<span class="info-text" tooltip="{{hvm_fuse_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																		<input id="hvm_fuse" type="checkbox" name="fuse" class="appearance-none peer"/>
+																		<span class="virt-toggle-switch"></span>
 																	</label>
 																</div>
-																<input id="hvm_fuse" type="checkbox" name="fuse" class="virt-toggle-switch"/>
 															</div>
 															<div id="hvm_ipip_tr" class="checkbox-holder">
-																<div class="col-span-2">
-																	<label for="hvm_ipip" class="virt-label">{{hvm_ipip}}
-																		<span class="info-text" tooltip="{{hvm_ipip_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																<div class="col-span-2">	
+																	<label class="virt-label flex" for="hvm_ipip">
+																		{{hvm_ipip}}<span class="info-text" tooltip="{{hvm_ipip_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																		<input id="hvm_ipip" type="checkbox" name="ipip" class="appearance-none peer"/>
+																		<span class="virt-toggle-switch"></span>
 																	</label>
 																</div>
-																<input id="hvm_ipip" type="checkbox" name="ipip" class="virt-toggle-switch"/>
 															</div>
 															<div id="hvm_ipgre_tr" class="checkbox-holder">
 																<div class="col-span-2">
-																	<label for="hvm_ipgre" class="virt-label">{{hvm_ipgre}}
-																		<span class="info-text" tooltip="{{hvm_ipgre_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																	<label class="virt-label flex" for="hvm_ipgre">
+																		{{hvm_ipgre}}<span class="info-text" tooltip="{{hvm_ipgre_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																		<input id="hvm_ipgre" type="checkbox" name="ipgre" class="appearance-none peer"/>
+																		<span class="virt-toggle-switch"></span>
 																	</label>
 																</div>
-																<input id="hvm_ipgre" type="checkbox" name="ipgre" class="virt-toggle-switch"/>
 															</div>
 														</div>
 														<div class="grid w-full xl:grid-cols-3 lg:grid-cols-3 md:w-full px-2 gap-2">
@@ -1265,7 +1285,7 @@
 																</label>
 																<input type="text" name="quotaugidlimit" id="hvm_quotaugidlimit" class="virt-input my-1" placeholder="" />
 															</div>
-															<div id="hvm_iopslimit_tr">
+															<div id="hvm_iolimit_tr">
 																<label for="hvm_iolimit" class="virt-label">{{hvm_iolimit}}
 																	<span class="info-text" tooltip="{{hvm_iolimit_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
 																</label>
@@ -1279,19 +1299,23 @@
 															</div>
 														</div>
 														<div class="grid w-full xl:grid-cols-3 lg:grid-cols-3 md:w-full px-2 gap-2">
-															<div id="tuntap_enable_tr" class="checkbox-holder hidden">
+															<div id="tuntap_enable_tr" class="checkbox-holder">
 																<div class="col-span-2">
-																	<label for="tuntap_enable" class="virt-label">{{hvm_tuntap_enable}}</label>
-																</div>
-																<input id="tuntap_enable" type="checkbox" name="tuntap_enable" class="virt-toggle-switch"/>
+																	<label class="virt-label flex" for="tuntap_enable">
+																		{{hvm_tuntap_enable}}<span class="info-text" tooltip="{{tuntap_enable_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																		<input id="tuntap_enable" type="checkbox" name="tuntap_enable" class="appearance-none peer"/>
+																		<span class="virt-toggle-switch"></span>
+																	</label>
+																</div>																
 															</div>
-															<div id="ppp_enable_tr" class="checkbox-holder hidden">
+															<div id="ppp_enable_tr" class="checkbox-holder">
 																<div class="col-span-2">
-																	<label for="ppp_enable" class="virt-label">{{hvm_ppp_enable}}
-																		<span class="info-text" tooltip="{{hvm_ppp__info_enable}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																	<label class="virt-label flex" for="ppp_enable">
+																		{{hvm_ppp_enable}}<span class="info-text" tooltip="{{hvm_ppp__info_enable}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																		<input id="ppp_enable" type="checkbox" name="ppp_enable" class="appearance-none peer"/>
+																		<span class="virt-toggle-switch"></span>
 																	</label>
 																</div>
-																<input id="ppp_enable" type="checkbox" name="ppp_enable" class="virt-toggle-switch"/>
 															</div>
 														</div>
 													</div>
@@ -1302,21 +1326,21 @@
 												</form>
 											</main>
 										</div>
-										<!-- <div class="vps_settings hidden bg" id="ssh_lm" role="tabpanel" aria-labelledby="ssh-tab">
+										<!-- <div class="vps_settings hidden bg" id="ssh-tab">
 											<div id="show_ssh"></div>
 										</div> -->
-										<div class="vps_settings hidden bg" id="sshkeys" role="tabpanel" aria-labelledby="sshkeys-tab" >
+										<div class="vps_settings hidden bg" id="sshkeys-cell-tab">
 											<form id="sshkeysform" accept-charset="UTF-8" action="" method="post" name="sshkeys" onsubmit="return submitit('sshkeysform')">
 												<div id="sshkey_list" class="grid grid-cols-3 gap-3 p-2"></div>
 												<div class="text-center p-2">
 													<input type="submit" value="{{sshkey_use}}" name="sshkey_add" class="blue_btn mx-1" />
-													<input type="button" value="{{sshkey_list}}" class="blue_btn mx-1" onclick="javascript:loadpage('act=sshkeys');return false;" />
-													<input type="button" value="{{sshkey_add_new}}" class="blue_btn mx-1" onclick="javascript:loadpage('act=sshkeys');return false;" />
+													<input type="button" value="{{sshkey_list}}" class="blue_btn mx-1" onclick="showtab('enduser_sshkeys', 'vps_settings', 'show_sshkeys_window');showtab('enduser_sshkeys_list', 'enduser_sshkeys-tab-content');" />
+													<input type="button" value="{{sshkey_add_new}}" class="blue_btn mx-1" onclick="showtab('enduser_sshkeys', 'vps_settings', 'show_sshkeys_window');showtab('enduser_sshkeys_add', 'enduser_sshkeys-tab-content');" />
 													<input type="hidden" name="addkeyvps" value="1" />
 												</div>
 											</form>
 										</div>
-										<div class="vps_settings hidden bg" id="vncdetail" role="tabpanel" aria-labelledby="vncdetail-tab" >
+										<div class="vps_settings hidden bg" id="vncdetail-tab">
 											<main class="lg:p-5 p-3">
 												<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
 													<div class="virt-border-shadow">
@@ -1374,38 +1398,133 @@
 										<!-- <div class="hidden bg" id="vncpass" role="tabpanel" aria-labelledby="vncpass-tab" >
 											vncpass
 										</div> -->
-										<div class="vps_settings hidden bg" id="console" role="tabpanel" aria-labelledby="console-tab" >
+										<div class="vps_settings hidden bg" id="console-tab">
 											<div id="console_div"></div>
 										</div>
+										<div class="vps_settings hidden bg" id="enduser_iso-tab">
+											<div class="flex justify-center mb-2">
+												<div class="nav-button">
+													<button onclick="showtab(this.id, 'enduser_iso-tab-content');" class="py-2 md:px-8 px-4 transition-all duration-300 active enduser_iso-tab-button tab-button" id="enduser_listiso">{{hvm_listiso}}</button>
+													<button onclick="showtab(this.id, 'enduser_iso-tab-content');" class="py-2 md:px-8 px-4 transition-all duration-300 enduser_iso-tab-button tab-button" id="enduser_addiso">{{hvm_addiso}}</button>
+												</div>
+											</div>
+											<div id="enduser_listiso-tab" class="enduser_iso-tab-content bg">
+												<div class="overflow-x-auto">
+													<div id="euisolist"></div>
+												</div>
+												<div class="notice" style="display:none;" id="no_eu_iso">{{euiso_no_iso}}</div>
+											</div>
+											<div id="enduser_addiso-tab" class="enduser_iso-tab-content bg hidden">
+												<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
+													<div class="dark:bg-[#16192E] border border-[#ECEFF3] dark:border-[#23283F] rounded-lg commonBoxShadow">
+														<div class="box-head">
+															<h3 class="font-medium">{{euiso_add_iso}}</h3>
+														</div>
+														<form action="act=addiso" method="post" id="addisoform" name="addisoform" onsubmit="return submitit(this);" class="flex flex-col gap-7 px-4 py-5" accept-charset="UTF-8">
+															<div>
+																<input type="url" id="iso_url" name="iso_url" autocomplete="off" placeholder="{{aiso_url}}" class="virt-input" onblur="extractfilename(this.value)"/>
+															</div>
+															<div>
+																<input type="text" id="iso_name" name="filename" placeholder="{{aiso_name}}" class="virt-input" />
+															</div>
+				
+															<div class="flex">
+																<input type="submit" id="addiso_submit" value="{{aiso_submit_button}}" class="blue_btn"/>
+															</div>
+															<input type="hidden" name="addiso" value="1" />
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="vps_settings hidden bg" id="enduser_sshkeys-tab">
+											<div class="flex justify-center mb-2">
+												<div class="nav-button">
+													<button onclick="showtab(this.id, 'enduser_sshkeys-tab-content');" class="py-2 md:px-8 px-4 transition-all duration-300 active enduser_sshkeys-tab-button tab-button" id="enduser_sshkeys_list">{{sshkey_list}}</button>
+													<button onclick="showtab(this.id, 'enduser_sshkeys-tab-content');" class="py-2 md:px-8 px-4 transition-all duration-300 enduser_sshkeys-tab-button tab-button" id="enduser_sshkeys_add">{{sshkey_add}}</button>
+												</div>
+											</div>
+											<div id="enduser_sshkeys_list-tab" class="enduser_sshkeys-tab-content bg">
+												<div class="banner-blue mb-4 mt-8">{{ssh_keys_delete_warn}}</div>
+												<div class="mb-5 active" role="tabpanel" aria-labelledby="sshkeys-list-tab">
+													<form accept-charset="UTF-8" id="deletesshkeyform" action="act=sshkeys" method="post" name="deletesshkeyform" class="form-horizontal">
+														<input type="hidden" id="sshkey_delete" name="delete" value="" />
+													</form>
+													<div class="scrollbar-virt">
+														<div id="sshkeylist"></div>
+													</div>
+													<div class="clearfix"></div>
+												</div>
+												<div class="flex justify-end my-4 mr-2">
+													<div class="flex w-1/2 lg:w-1/4 gap-3">
+														<select class="virt-select" name="multi_options" id="sshkey_multi_options">
+															<option value="0">{{with_selected}}:</option>
+															<option value="1">{{delete}}</option>
+														</select>
+														<input type="submit" class="btn justify-content-end align-items-center d-flex text-white" value="GO" onclick="sshkey_go_click(); return false;">
+													</div>
+												</div>
+											</div>
+											<div id="enduser_sshkeys_add-tab" class="enduser_sshkeys-tab-content bg">
+												<main class="lg:p-5 p-3">
+													<div class="managezone">
+														<div class="grid lg:grid-cols-2 grid-cols-1 gap-8">
+															<div class="virt-border-shadow">
+																<div class="box-head">
+																	<h3 class="font-medium">{{sshkey_add}}</h3>
+																</div>
+																<div class="px-4 py-2">
+																	<form accept-charset="UTF-8" id="addsshkeyform" action="act=addsshkey" method="post" name="addsshkeyform" onsubmit="return submitit('addsshkeyform');" class="form-horizontal">
+																		<input type="hidden" name="add" value="1" />
+																		<div class="my-4">
+																		<label for="addsshkey_name" class="virt-label mr-1">{{sshkey_name}}</label>
+																			<span tooltip="{{sshkey_name_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																			<input type="text" class="virt-input my-2" id="addsshkey_name" name="name" />
+																		</div>
+																		<div class="my-4">
+																		<label for="addsshkey_value" class="virt-label mr-1">{{sshkey_value}}</label>
+																			<span tooltip="{{sshkey_value_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																			<textarea class="virt-input my-2 p-3" rows="10" id="addsshkey_value" name="value"></textarea>
+																		</div>
+																		<input type="submit" name="addsshkey" value="{{sshkey_heading_add}}" class="blue_btn mr-2 mb-4" />
+																	</form>	
+																</div>
+															</div>
+														</div>
+													</div>
+												</main>	
+											</div>
+										</div>
 									</div>
+
 								</div>
 							</div>
 							<div class="tab-pane fade main-tab-content hidden" id="oscell-tab" role="tabpanel" aria-labelledby="oscell">
 								<div class="md:flex">
 									<div class="lg:hidden xl:hidden md:hidden sm:block mb-2 px-4">
 										<select onchange="show_settings_tab(this.value, 'install_settings');" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" role="tablist">
-											<option value="reinstall">{{vm_lm_ostemp}}</option>
-											<option value="controlpanel">{{vm_lm_controlpanel}}</option>
-											<option value="recipe-mode-cell">{{vm_lm_recipe}}</option>
-											<option value="install_apps">{{lm_installapps}}</option>
+											<option value="reinstall-tab">{{vm_lm_ostemp}}</option>
+											<option value="controlpanel-tab">{{vm_lm_controlpanel}}</option>
+											<option value="recipe-mode-cell-tab">{{vm_lm_recipe}}</option>
+											<option value="install_apps-tab">{{lm_installapps}}</option>
 										</select>
 									</div>
-									<ul class="hidden lg:block md:flex xl:flex flex-col space-y space-y-1 text-sm font-medium md:me-4 mb-4 md:mb-0 w-1/5" data-tabs-toggle="#oscell-default-tab-content" role="tablist">
+									<ul class="hidden lg:block md:flex xl:flex flex-col space-y space-y-1 text-sm font-medium md:me-4 mb-4 md:mb-0 w-1/5">
 										<li role="presentation">
-											<button class="vertical_left_tab" id="reinstall-tab" data-tabs-target="#reinstall" role="tab" aria-controls="reinstall" aria-selected="ture" onclick="show_osreinstall_window();">{{vm_lm_ostemp}}</button>
+											<button class="vertical_left_tab install_settings-tab-button" id="reinstall" onclick="showtab(this.id, 'install_settings', 'show_osreinstall_window');">{{vm_lm_ostemp}}</button>
 										</li>
 										<li role="presentation">
-											<button class="vertical_left_tab" id="controlpanel-tab" data-tabs-target="#controlpanel" role="tab" aria-controls="controlpanel" aria-selected="false">{{vm_lm_controlpanel}}</button>
+											<button class="vertical_left_tab install_settings-tab-button" id="controlpanel" onclick="showtab(this.id, 'install_settings');">{{vm_lm_controlpanel}}</button>
 										</li>
 										<li role="presentation">
-											<button class="vertical_left_tab" id="recipe-mode-cell-tab" data-tabs-target="#recipe-mode-cell" role="tab" aria-controls="recipe-mode-cell" aria-selected="false">{{vm_lm_recipe}}</button>
+											<button class="vertical_left_tab install_settings-tab-button" id="recipe-mode-cell" onclick="showtab(this.id, 'install_settings');">{{vm_lm_recipe}}</button>
 										</li>
 										<li role="presentation">
-											<button class="vertical_left_tab" id="install_apps-tab" data-tabs-target="#install_apps" role="tab" aria-controls="install_apps" aria-selected="false">{{lm_installapps}}</button>
+											<button class="vertical_left_tab install_settings-tab-button" id="install_apps" onclick="showtab(this.id, 'install_settings');">{{lm_installapps}}</button>
 										</li>
 									</ul>
 									<div id="oscell-default-tab-content" class="w-full">
-										<div class="install_settings hidden bg" id="reinstall" role="tabpanel" aria-labelledby="reinstall-tab" >
+										<div class="install_settings hidden bg" id="reinstall-tab">
 											<main class="lg:p-5 p-3">
 												<div id="no_os" class="p-2" style="display:none">
 													<div class="notice text-center">
@@ -1414,7 +1533,7 @@
 												</div>
 												<div id="os_reins" class="p-2 notice" style="display:none;"></div>
 												<label class="form-label">{{os_select_os}}</label>
-												<div id="os_list" class="grid grid-cols-4 2xl:grid-cols-3 xl:grid-cols-3 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-2 mb-2"></div>
+												<div id="os_list" class="grid grid-cols-4 2xl:grid-cols-4 xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-2 mb-2"></div>
 												<div class="grid xl:grid-cols-2 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
 													<div class="virt-border-shadow">
 														<div class="box-head">
@@ -1440,13 +1559,18 @@
 																<p class="os_pass_mismatch text-red-500 text-sm mt-2"></p>
 															</div>
 															<div class="inline-flex items-center gap-2" style="display:none;" id="os_format_primary">
-																<input type="checkbox" name="format_primary" class="virt-checkbox" id="format_primary" />
-																<label for="format_primary" class="virt-label">{{os_format_primary}}</label>
+																<label class="virt-label flex" for="format_primary">
+																	{{os_format_primary}}
+																	<input type="checkbox" name="format_primary" class="appearance-none peer" id="format_primary" />
+																	<span class="virt-toggle-switch"></span>
+																</label>
 															</div>
 															<div class="inline-flex items-center gap-2">
-																<input type="checkbox" name="remove_old_ssh_keys" class="virt-checkbox" />
-																<label for="remove_old_ssh_keys" class="virt-label">{{remove_old_ssh_keys}}</label>
-																<span class="info-text" tooltip="{{remove_old_ssh_keys_exp}}"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+																<label class="virt-label flex" for="remove_old_ssh_keys">
+																	{{remove_old_ssh_keys}}
+																	<input type="checkbox" name="remove_old_ssh_keys" id="remove_old_ssh_keys" class="appearance-none peer" />
+																	<span class="virt-toggle-switch"></span>
+																</label>
 															</div>
 		
 															<div class="inline-flex items-center gap-2" id="ssh_key_rebuild_div">
@@ -1472,7 +1596,7 @@
 												</div>
 											</main>
 										</div>
-										<div class="install_settings hidden bg" id="controlpanel" role="tabpanel" aria-labelledby="controlpanel-tab" >
+										<div class="install_settings hidden bg" id="controlpanel-tab">
 											<main class="lg:p-5 p-3">
 												<div class="notice cp_notice mb-5" style="display:none;">{{cpan_os_notice}}</div>
 												<form id="installcp" accept-charset="UTF-8" action="" method="post" name="installcp">
@@ -1515,7 +1639,7 @@
 												</form>
 											</main>
 										</div>
-										<div class="install_settings hidden bg" id="recipe-mode-cell" role="tabpanel" aria-labelledby="recipe-mode-cell-tab" >
+										<div class="install_settings hidden bg" id="recipe-mode-cell-tab" >
 											<main class="lg:p-5 p-3">
 												<div class="notice" style="display:none;" id="no_recipes">{{no_recipes}}</div>
 												<form id="recipeform" accept-charset="UTF-8" name="recipes" method="post" action="" style="display:none">
@@ -1543,7 +1667,7 @@
 												</form>
 											</main>
 										</div>
-										<div class="install_settings hidden bg" id="install_apps" role="tabpanel" aria-labelledby="install_apps-tab" >
+										<div class="install_settings hidden bg" id="install_apps-tab">
 											<main class="lg:p-5 p-3">
 												<form id="webuzosettingsform" accept-charset="UTF-8" method="post" name="webuzosettings" class="flex flex-col gap-7 px-4 py-5">
 													<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
@@ -1571,25 +1695,27 @@
 													<div class="mt-3">
 														<label for="webuzo_spasswd" class="virt-label">{{webuzo_appstack}}</label>
 														<div class="flex justify-start my-3">
-															<div class="flex items-center gap-1 border border-[#ECEFF3] dark:border-gray-800 bg-white dark:bg-[#15172B] p-2 rounded-full  font-medium text-sm tabShadow">
+															<div class="nav-button">
 																<button type="button" onclick="webuzo_apps(this.value);" value="lamp" id="lamp" class="py-2 md:px-4 webuzo_appstack px-3 transition-all duration-300 tab-button active">LAMP</button>
 																<button type="button" onclick="webuzo_apps(this.value);" value="lemp" id="lemp" class="py-2 md:px-4 webuzo_appstack px-3 transition-all duration-300 tab-button">LEMP</button>
 																<button type="button" onclick="webuzo_apps(this.value);" value="llmp" id="llmp" class="py-2 md:px-4 webuzo_appstack px-3 transition-all duration-300 tab-button">LLMP</button>
 																<input type="hidden" name="webuzo_stack" id="webuzo_stack" />
 															</div>
 														</div>
-														<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
-															<div id="webuzo_webserver_tr">
-																<label for="webuzo_webserver" class="virt-label">{{webuzo_apache}}</label>
-																<select id="webuzo_webserver" class="select2 virt-select my-2" name="webserver"></select>
-															</div>
-															<div id="webuzo_mysql_tr">
-																<label for="webuzo_mysql" class="virt-label">{{webuzo_mysql}}</label>
-																<select id="webuzo_mysql" class="select2 virt-select my-2" name="mysql"></select>
-															</div>
-															<div id="webuzo_php_tr">
-																<label for="webuzo_php" class="virt-label">{{webuzo_php}}</label>
-																<select id="webuzo_php" class="select2 virt-select my-2" name="php"></select>
+														<div class="bg-border bg stack_tr">
+															<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
+																<div id="webuzo_webserver_tr">
+																	<label for="webuzo_webserver" class="virt-label">{{webuzo_apache}}</label>
+																	<select id="webuzo_webserver" class="select2 virt-select my-2" name="webserver"></select>
+																</div>
+																<div id="webuzo_mysql_tr">
+																	<label for="webuzo_mysql" class="virt-label">{{webuzo_mysql}}</label>
+																	<select id="webuzo_mysql" class="select2 virt-select my-2" name="mysql"></select>
+																</div>
+																<div id="webuzo_php_tr">
+																	<label for="webuzo_php" class="virt-label">{{webuzo_php}}</label>
+																	<select id="webuzo_php" class="select2 virt-select my-2" name="php"></select>
+																</div>
 															</div>
 														</div>
 													</div>
@@ -1703,7 +1829,7 @@
 									</div>
 									<ul class="hidden lg:block md:flex xl:flex flex-col space-y-1 text-sm font-medium md:me-4 mb-4 md:mb-0 w-1/5" data-tabs-toggle="rdns-default-tab-content" role="tablist">
 										<li role="presentation">
-											<button class="vertical_left_tab" id="list_rdns-tab" data-tabs-target="#list_rdns" role="tab" aria-selected="false"> {{rdns_rdns_existing}}</button>
+											<button class="vertical_left_tab" id="list_rdns-tab" data-tabs-target="#list_rdns" role="tab" onclick="rdns_onload();" aria-selected="false"> {{rdns_rdns_existing}}</button>
 										</li>
 										<li role="presentation">
 											<button class="vertical_left_tab" id="add_rdns-tab" data-tabs-target="#add_rdns" role="tab" aria-selected="true">{{rdns_page_head}}</button>
@@ -2179,28 +2305,28 @@
 								<div class="md:flex">
 									<div class="lg:hidden xl:hidden md:hidden sm:block mb-2">
 										<select onchange="show_settings_tab(this.value, 'networking_settings');" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" role="tablist">
-											<option value="fw">{{vm_lm_change_firewall_plan}}</option>
-											<option value="ips">{{lm_ips}}</option>
-											<option value="lb">{{load_balancer}}</option>
-											<option value="manage_subnet">{{vm_lm_manage_subnet}}</option>
+											<option value="fw-tab">{{vm_lm_change_firewall_plan}}</option>
+											<option value="ips-tab">{{lm_ips}}</option>
+											<option value="lb-tab">{{load_balancer}}</option>
+											<option value="manage_subnet-tab">{{vm_lm_manage_subnet}}</option>
 										</select>
 									</div>
 									<ul class="hidden lg:block md:flex xl:flex flex-col space-y-1 text-sm font-medium md:me-4 mb-4 md:mb-0 w-1/5" data-tabs-toggle="#settings-default-tab-content" role="tablist">
 										<li role="presentation">
-											<button class="vertical_left_tab" id="fw-tab" data-tabs-target="#fw" role="tab" onclick="show_firewall_plans();"> {{vm_lm_change_firewall_plan}}</button>
+											<button class="vertical_left_tab networking_settings-tab-button" id="fw" onclick="showtab(this.id, 'networking_settings', 'show_firewall_plans');"> {{vm_lm_change_firewall_plan}}</button>
 										</li>
 										<li role="presentation">
-											<button class="vertical_left_tab" id="ips-tab" data-tabs-target="#ips" role="tab" onclick="show_ipform();">{{lm_ips}}</button>
+											<button class="vertical_left_tab networking_settings-tab-button" id="ips" onclick="showtab(this.id, 'networking_settings', 'show_ipform');">{{lm_ips}}</button>
 										</li>
 										<li role="presentation">
-											<button class="vertical_left_tab" id="lb-tab" data-tabs-target="#lb" role="tab" onclick="show_select_lb_window();">{{load_balancer}}</button>
+											<button class="vertical_left_tab networking_settings-tab-button" id="lb" onclick="showtab(this.id, 'networking_settings', 'show_select_lb_window');">{{load_balancer}}</button>
 										</li>
 										<li role="presentation">
-											<button class="vertical_left_tab" id="manage_subnet-tab" data-tabs-target="#manage_subnet" role="tab" onclick="show_managesubnets_window();">{{vm_lm_manage_subnet}}</button>
+											<button class="vertical_left_tab networking_settings-tab-button" id="manage_subnet" onclick="showtab(this.id, 'networking_settings', 'show_managesubnets_window');">{{vm_lm_manage_subnet}}</button>
 										</li>
 									</ul>
 									<div id="networking-default-tab-content" class="w-full">
-										<div class="networking_settings hidden bg" id="fw" role="tabpanel" aria-labelledby="fw-tab" >
+										<div class="networking_settings hidden bg" id="fw-tab">
 											<form action="" id="changefirewallplanform" accept-charset="UTF-8" method="post" name="changefirewallplanform">
 												<label for="li_change_fwid" class="virt-label">{{fw_change_plan}}</label>
 												<span tooltip="{{fw_list_plans_exp}}">
@@ -2232,7 +2358,7 @@
 												</thead>
 											</table>
 										</div>
-										<div class="networking_settings hidden bg" id="ips" role="tabpanel" aria-labelledby="ips-tab" >
+										<div class="networking_settings hidden bg" id="ips-tab">
 											<main class="lg:p-5 p-3">
 												<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
 													<div class="virt-border-shadow">
@@ -2250,11 +2376,11 @@
 												</div>
 											</main>
 										</div>
-										<div class="networking_settings hidden bg" id="lb" role="tabpanel" aria-labelledby="lb-tab" >
+										<div class="networking_settings hidden bg" id="lb-tab">
 											<form id="select_lb_form">
 											</form>
 										</div>
-										<div class="networking_settings hidden bg" id="manage_subnet" role="tabpanel" aria-labelledby="manage_subnet-tab" >
+										<div class="networking_settings hidden bg" id="manage_subnet-tab">
 											<form action="" id="managesubnetsform" accept-charset="UTF-8" method="post" name="managesubnetsform">
 												<div id="managesubnets_div" class="managesubnets_div table-fix"></div>
 											</form>
@@ -4102,7 +4228,7 @@
 					<!-- Cloud User Tasks Ends -->
 
 					<!-- SSH Keys -->
-					<div class="khidki hidden" id="sshkeys">
+					<!-- <div class="khidki hidden" id="sshkeys">
 						<main class="lg:p-5 p-3">
 							<div class="eu-page-header">
 								<div class="eu-page-title">
@@ -4179,7 +4305,7 @@
 								</div>
 							</div>
 						</main>
-					</div>
+					</div> -->
 					<!-- End SSH Keys -->
 
 					<!-- Add SSH Key -->
@@ -4268,32 +4394,10 @@
 								</div>
 							</div>
 							<div class="tab-pane fade euiso-tab-content bg" id="euiso-list-tab" role="tabpanel" aria-labelledby="euiso-list" >
-								<div class="overflow-x-auto">
-									<div id="euisolist"></div>
-								</div>
-								<div class="notice" style="display:none;" id="no_eu_iso">{{euiso_no_iso}}</div>
+								
 							</div>
 							<div class="tab-pane fade euiso-tab-content hidden bg" id="addiso-tab" role="tabpanel" aria-labelledby="addiso" >
-								<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
-									<div class="dark:bg-[#16192E] border border-[#ECEFF3] dark:border-[#23283F] rounded-lg commonBoxShadow">
-										<div class="box-head">
-											<h3 class="font-medium">{{euiso_add_iso}}</h3>
-										</div>
-										<form action="act=addiso" method="post" id="addisoform" name="addisoform" onsubmit="return submitit(this);" class="flex flex-col gap-7 px-4 py-5" accept-charset="UTF-8">
-											<div>
-												<input type="url" id="iso_url" name="iso_url" autocomplete="off" placeholder="{{aiso_url}}" class="virt-input" onblur="extractfilename(this.value)"/>
-											</div>
-											<div>
-												<input type="text" id="iso_name" name="filename" placeholder="{{aiso_name}}" class="virt-input" />
-											</div>
-
-											<div class="flex">
-												<input type="submit" id="addiso_submit" value="{{aiso_submit_button}}" class="blue_btn"/>
-											</div>
-											<input type="hidden" name="addiso" value="1" />
-										</form>
-									</div>
-								</div>
+								
 							</div>
 						</main>
 					</div>
@@ -5796,7 +5900,7 @@
 						<div class="text-xs border-t border-t-[#ECEFF3] dark:border-t-[#23283F] p-2">
 							<p class="text-center">{{times_are}} <span id="timezone"></span>. {{time_is}} <span id="timenow"></span></p>
 							<p class="text-center">
-								<span class="font-semibold">[[copyright]]</span>
+								<span class="font-semibold" id="copyright">[[copyright]]</span>
 							</p>
 						</div>
 					</div>
@@ -5823,7 +5927,7 @@
 							<tr>
 								<th>{{desc}}</th>
 								<td>
-									<div id="rec_desc"></div>
+									<div id="rec_desc" class="max-w-[26rem] max-h-28 overflow-auto"></div>
 								</td>
 							</tr>
 							<tr>
@@ -6010,7 +6114,7 @@
 						</div>
 						<div class="nav-button">
 							<button id="listvdf" onclick="showtab(this.id, 'vdf-tab-content');" class="py-1 md:px-8 px-2 vdf-tab-button tab-button active">{{list}}</button>
-							<button id="addvdf" onclick="showtab(this.id, 'vdf-tab-content')" class="py-1 md:px-8 px-2 vdf-tab-button tab-button">{{add}}</button>
+							<button id="addvdfform" onclick="showtab(this.id, 'vdf-tab-content');showvdfform();" class="py-3 md:px-8 px-2 vdf-tab-button tab-button">{{add}}</button>
 						</div>
 						<div class="tab-pane fade vdf-tab-content" id="listvdf-tab" role="tabpanel">
 
@@ -6024,27 +6128,27 @@
 								</div>
 							</div>
 						</div>
-						<div class="tab-pane fade vdf-tab-content hidden" id="addvdf-tab" role="tabpanel">
+						<div class="tab-pane fade vdf-tab-content hidden" id="addvdfform-tab" role="tabpanel">
 							<form name="addvdf" id="addvdf" method="post" action="" onsubmit="return false;">
 								<div class="grid grid-cols-5">
-									<div>
-										<label class="virt-label" for="protocol">{{vdf_proto}}</label>
+									<div class="px-2">
+										<label class="virt-label whitespace-nowrap" for="protocol">{{vdf_proto}}</label>
 										<select class="virt-select" id="protocol" name="protocol" onchange="processaddvdfform(this);"></select>
 									</div>
-									<div>
-										<label class="virt-label" for="src_hostname" >{{vdf_src_hname}}</label>
+									<div class="px-2">
+										<label class="virt-label whitespace-nowrap" for="src_hostname" >{{vdf_src_hname}}</label>
 										<select class="virt-select" id="src_hostname" name="src_hostname"></select>
 									</div>
-									<div>
-										<label class="virt-label" for="src_port">{{vdf_src_port}}</label>
+									<div class="px-2">
+										<label class="virt-label whitespace-nowrap" for="src_port">{{vdf_src_port}}</label>
 										<input type="text" class="virt-input text-md" id="src_port" name="src_port"/>
 									</div>
-									<div>
-										<label class="virt-label" for="dest_ip">{{vdf_dest_ip}}</label>
+									<div class="px-2">
+										<label class="virt-label whitespace-nowrap" for="dest_ip">{{vdf_dest_ip}}</label>
 										<select class="virt-select" id="dest_ip" name="dest_ip"></select>
 									</div>
-									<div>
-										<label class="virt-label" for="dest_port">{{vdf_dest_port}}</label>
+									<div class="px-2">
+										<label class="virt-label whitespace-nowrap" for="dest_port">{{vdf_dest_port}}</label>
 										<input type="text" class="virt-input" id="dest_port" name="dest_port"/>
 									</div>
 								</div>
@@ -6129,7 +6233,7 @@
 	<!-- New Alert Modal End -->
 
 	<!-- New Confirm Modal start -->
-	<div id="confirm-modal" aria-hidden="true" class="hidden overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 justify-center items-center z-50">
+	<div id="confirm-modal" class="hidden overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 justify-center items-center z-50">
 		<div class="modal-wrapper">
 			<!-- Modal content -->
 			<div class="modal-content">

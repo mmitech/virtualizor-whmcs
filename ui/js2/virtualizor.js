@@ -755,6 +755,11 @@ function handleData(){
 
 	header_fix();
 
+	// Handle footer
+	if('copyright' in N){
+		$("#copyright").html(N['copyright']);
+	}
+
 }
 
 //Function / js code which needs to be called for all the pages
@@ -809,7 +814,7 @@ function common_func_calls(){
 };
 
 function checktheme(page){
-
+	
 	var page = page || '';
 	//console.log(page);
 	// icons
@@ -2293,14 +2298,18 @@ function vpsmanage_onload(){
 		return -1;
 	}
 
-	// Check if the setup is pending and user is trying to manage the VM
-	if(!empty(N['info']['vps']['data']['setup_pending'])){
-		loadpage('act=setup_pending&setup_pending='+N['info']['vps']['data']['setup_pending']+'&svs='+N['info']['vps']['vpsid']);
-		return true;
+	if(!empty(N['info']['vps']['data'])){
+		// Check if the setup is pending and user is trying to manage the VM
+		if(!empty(N['info']['vps']['data']['setup_pending'])){
+			$('.setup_pending_notice').removeClass('hidden');
+			$('.setup_pending_link').html('<a href="javascript:void(0);" onclick="loadpage(\'act=setup_pending&setup_pending='+N['info']['vps']['data']['setup_pending']+'&svs='+N['info']['vps']['vpsid']+'\');">{{ps_click_to_complete_setup}}</a>');
+		}else{
+			$('.setup_pending_notice').addClass('hidden');
+		}
 	}
 	
 	// For Advanced option
-	$('#vnc, #vncdetail-tab, #vncpass-cell-tab, #lb-tab, #control-panel-tab, #rescue-mode-cell, #backups-cell, #backups-inc-tab, #manage_subnet-tab, #monitoring-tab, #proc-cell, #services, #alerts-cell, #console-tab, #recipe-mode-cell-tab, #reinstall-tab, #ssh, #ssh-cell, #hostname-tab, #vps-hostname, #change-password-tab, #ips-tab, #self_shutdown-cell, #managevdf-cell, #sshkeys-cell, #fw-tab, #changefirewallplanform').hide();
+	$('#vnc, #vncdetail, #vncpass-cell-tab, #lb, #controlpanel, #rescue-mode-cell, #backups-cell, #backups-inc, #manage_subnet, #system_stat, #proc-cell, #services, #alerts-cell, #console, #recipe-mode-cell, #reinstall, #ssh, #ssh-cell, #hostname, #vps-hostname, #changepass, #ips, #self_shutdown-cell, #managevdf-cell, #sshkeys-cell, #fw, #changefirewallplanform').hide();
 	$("#select_lb_form").html('');
 
 	$('.floating-button').show();
@@ -2422,17 +2431,17 @@ function vpsmanage_onload(){
 	$('#vps-desc-hostname').html(`${N['info']['hostname']}`);
 
 	$('#vps-desc-ip').html(N['info']['ip'][0]);
-	$('#ip_count').hide();
+	$('#ip_count').hide().removeClass('tooltip');
 
 	if(N['info']['ip_count'] > 1){
 		$('#ip_count').html('+'+(N['info']['ip_count'] - 1)).show();
 		var ip_list = '';
 		for(x in N['info']['ip']){
 			if(x == 0) continue;
-			ip_list += '<div >'+ N['info']['ip'][x] + '</div>';
+			ip_list += '<div>'+ N['info']['ip'][x] + '</div>';
 		}
 
-		$('#ip_count').attr('data-content', ip_list);
+		$('#ip_count').attr('tooltip', ip_list);
 	}
 
 	// Update the power options box
@@ -2494,7 +2503,7 @@ function vpsmanage_onload(){
 
 	if(!empty(N['info']['flags']['power_only_option']) && !empty(N['info']['vps']['admin_managed'])){
 		$('.dashboard-tab').hide();
-		$('#vncdetail-tab, #vncpass-cell, #vnc, #ssh, #scaling-cell, #lb-tab, #fw-tab, #changefirewallplanform').hide();
+		$('#vncdetail, #vncpass-cell, #vnc, #ssh, #scaling-cell, #lb, #fw, #changefirewallplanform').hide();
 		$("#select_lb_form").html('');
 		dashboard_info_box();
 		return false;
@@ -2515,12 +2524,12 @@ function vpsmanage_onload(){
 	}
 	
 	// For Advanced option
-	$('#vnc, #vncdetail-tab, #vncpass-cell-tab, #lb-tab, #control-panel-tab, #rescue-mode-cell, #backups-cell, #backups-inc-tab, #manage_subnet-tab, #monitoring-tab, #proc-cell, #services, #alerts-cell, #console-cell, #recipe-mode-cell-tab, #reinstall-tab, #ssh, #ssh-cell, #hostname-tab, #vps-hostname, #change-password-tab, #ips-tab, #self_shutdown-cell, #managevdf-cell, #sshkeys-cell, #scaling-cell, .disable_eu_sshkeys, #fw-tab, #changefirewallplanform').hide();
+	$('#vnc, #vncdetail, #vncpass-cell-tab, #lb, #controlpanel, #rescue-mode-cell, #backups-cell, #backups-inc, #manage_subnet, #system_stat, #proc-cell, #services, #alerts-cell, #recipe-mode-cell, #reinstall, #ssh, #ssh-cell, #hostname, #vps-hostname, #changepass, #ips, #self_shutdown-cell, #managevdf-cell, #sshkeys-cell, #scaling-cell, .disable_eu_sshkeys, #fw, #changefirewallplanform').hide();
 	$("#select_lb_form").html('');
 
 	var show_install_id = '';
 	if(!empty(N['info']['vps']['vnc']) && N['info']['virt'] != 'openvz' && N['info']['virt'] != 'proxo' && empty(N['info']['vps']['admin_managed'])){
-		$('#vncdetail-tab, #vncpass-cell-tab, #vnc').show();
+		$('#vncdetail, #vncpass-cell-tab, #vnc').show();
 	}
 
 	if(N['check_licensepro'] && "load_balancer" in N && !empty(N['load_balancer'])){
@@ -2544,16 +2553,29 @@ function vpsmanage_onload(){
 			</div>
 		</div>`;
 		$("#select_lb_form").html(lb_options);
-		$("#lb-tab").show();
+		$("#lb").show();
 		showtooltip();
 	}
 
-	if(empty(N['disable_enduser_firewall'])){
-		$("#fw-tab, #changefirewallplanform").show();
+	if(empty(N['info']['flags']['disable_enduser_firewall']) && empty(N['info']['vps']['admin_managed'])){
+		$("#fw, #changefirewallplanform").show();
+	}else{
+		$("#firewall-cell").addClass("!hidden");
+	}
+
+	if(empty(N['info']['flags']['enable_rdns']) || !empty(N['info']['vps']['admin_managed'])){
+		$('#rdns-cell').addClass("!hidden");
 	}
 
 	if(!empty(N['info']['flags']['disable_change_vnc_password'])){
 		$("#vncpass-cell-tab").hide();
+	}
+
+	// Account information tab
+	if(empty(N['info']['flags']['disable_account_information'])){
+		$('#account-card').removeClass("!hidden");
+	}else{
+		$('#account-card').addClass("!hidden");
 	}
 	
 	// HAProxy VPS Domain Forwarding
@@ -2566,12 +2588,12 @@ function vpsmanage_onload(){
 	}
 
 	if(!empty(N['info']['flags']['enable_console']) && empty(N['info']['vps']['admin_managed'])){
-		$('#console-tab').show();
+		$('#console').show();
 	}
 
 	// For information block
 	if(empty(N['info']['flags']['disable_icons_monitor'])){
-		$('#monitoring-tab').show();
+		$('#system_stat').show();
 	}
 
 	if(!empty(N['info']['flags']['rescue_mode']) && empty(N['info']['vps']['admin_managed'])){
@@ -2579,26 +2601,26 @@ function vpsmanage_onload(){
 	}
 
 	if(empty(N['info']['flags']['disable_recipes']) && empty(N['info']['vps']['admin_managed'])){
-		$('#recipe-mode-cell-tab').show();
+		$('#recipe-mode-cell').show();
 	}
 
 	if(empty(N['info']['flags']['disable_change_hostname']) && empty(N['info']['vps']['admin_managed'])){
-		$('#hostname-tab, #vps-hostname').show();
+		$('#hostname, #vps-hostname').show();
 	}
 
 	if(empty(N['info']['flags']['disable_change_password']) && empty(N['info']['vps']['admin_managed'])){
-		$('#change-password-tab').show();
+		$('#changepass').show();
 	}
 
 	if (empty(N['info']['flags']['disable_os_reinstall']) && empty(N['info']['vps']['admin_managed'])) {
-		$('#reinstall-tab').show();
+		$('#reinstall').show();
 		if (empty(show_install_id)) {
 			show_install_id = 'reinstall-tab';
 		}
 	}
 
 	if (empty(N['info']['flags']['disable_icons_cp']) && empty(N['info']['vps']['admin_managed'])) {
-		$('#control-panel-tab').show();
+		$('#controlpanel').show();
 		if (empty(show_install_id)) {
 			show_install_id = 'control-panel-tab';
 		}
@@ -2615,15 +2637,15 @@ function vpsmanage_onload(){
 		show_cpinstall_window();
 	}
 
-	$('#controlpanel-tab').click(function() {
+	$('#controlpanel').click(function() {
 		show_cpinstall_window();
 	})
 
-	$('#recipe-mode-cell-tab').click(function() {
+	$('#recipe-mode-cell').click(function() {
 		show_listrecipes_window()
 	})
 
-	 $('#install_apps-tab').click(function() {
+	 $('#install_apps').click(function() {
 		show_webuzo_window();
 	})
 	 
@@ -2645,7 +2667,7 @@ function vpsmanage_onload(){
 	}
 
 	if(!empty(N['info']['flags']['ipv6_subnets']) && empty(N['info']['vps']['admin_managed'])){
-		$('#manage_subnet-tab').show();
+		$('#manage_subnet').show();
 	}
 
 	if(N['info']['virt'] == 'openvz' || N['info']['virt'] == 'vzo' || N['info']['virt'] == 'vzk' || !empty(N['info']['flags']['services_support'])){
@@ -2679,7 +2701,7 @@ function vpsmanage_onload(){
 	}
 
 	if(empty(N['info']['vps']['admin_managed']) && N['info']['ip_count'] > 1){
-		$('#ips-tab').show();
+		$('#ips').show();
 	}
 
 	if(empty(N['info']['flags']['disable_self_shutdown']) && empty(N['info']['vps']['admin_managed'])){
@@ -2691,7 +2713,7 @@ function vpsmanage_onload(){
 	}
 
 	if(!empty(N['info']['flags']['has_backuply'])){
-		$('#backups-inc-tab').show();
+		$('#backups-inc').show();
 	}
 
 	let nextTab = 'vps-logs-tab';
@@ -2716,7 +2738,7 @@ function vpsmanage_onload(){
 	}
 	
 	if(!empty(N['info']['flags']['disable_change_primary_ip'])){
-		$('#ips-tab').hide();
+		$('#ips').hide();
 	}
 
 	// Server load chart on the right
@@ -2941,7 +2963,7 @@ function vpsmanage_onload(){
 				var disk = data['info']['disk'];
 				var bandwidth = data['info']['bandwidth'];
 				var speed_data = data['info']['netspeed'];
-				let current_download_speed = speed_data["download"]/1024/1024;
+				let current_download_speed = (!empty(speed_data["download"]) ? speed_data["download"]/1024/1024 : 0);
 				current_download_speed = current_download_speed.toFixed(2);
 				
 				// Slice the top
@@ -3395,8 +3417,8 @@ function show_hvmsetting_window(){
 				if('boot' in data){						
 					$('#boot_reorder_pos_tr').removeClass('!hidden');
 					var order = '';
-					var boot_list_old = '<select name="boot" class="form-control w-100">';
-					var boot_list_new = '<div class="columns-2"><select name="boot" id="boot" class="form-control w-100" size="4">';
+					var boot_list_old = '<select name="boot" class="bg mr-2 w-40">';
+					var boot_list_new = '<div class="flex items-center"><select name="boot" id="boot" class="bg mr-2 w-40" size="4">';
 					var i = 0;
 					let new_boot = 0;
 			
@@ -3436,7 +3458,7 @@ function show_hvmsetting_window(){
 
 					if(new_boot){
 						boot_list_new += '</select>\
-									<div class="inset-y-0 right-0 flex items-center">\
+									<div class="inset-y-0 right-0 flex items-center flex-col gap-2">\
 										<button type="button" id="up" onclick="change_bootorder(this)" class="btn p-2">\
 											<i class="fas fa-arrow-up"></i>\
 										</button>\
@@ -3458,6 +3480,7 @@ function show_hvmsetting_window(){
 					var iso_list = '<option value="0">{{hvm_none}}</option>';
 					var options_eu_iso = options_iso = '';
 					for(x in data['isos']){
+						if(!(data['isos'][x]['size'])) continue;
 						if(!empty(data['isos'][x]['isuseriso'])){
 							options_eu_iso += '<option value="'+ x +'" ' + (data['vps']['iso'] == x ? 'selected="selected"' : '') + '>'+ data['isos'][x]['filename'] +'</option>';
 						}else{
@@ -3477,6 +3500,7 @@ function show_hvmsetting_window(){
 						options_eu_iso = options_iso = iso_list = '';
 						iso_list = '<option value="0">{{hvm_none}}</option>';
 						for(x in data['isos']){
+							if(!(data['isos'][x]['size'])) continue;
 							if(!empty(data['isos'][x]['isuseriso'])){
 								options_eu_iso += '<option value="'+ x +'" ' + (data['vps']['sec_iso'] == x ? 'selected="selected"' : '') + '>'+ data['isos'][x]['filename'] +'</option>';
 							}else{
@@ -3614,7 +3638,7 @@ function show_sshkeys_window() {
 	$('#sshkeysform .blue_btn').hide();
 				
 	AJAX('[[API]]act=sshkeys&svs='+N['vpsid'], function(data) {
-		
+
 		if(empty(data['ssh_keys'])) {
 			$('#sshkey_list').removeClass('row');
 			$('#sshkey_list').html('<div class="notice col-span-3 w-full">{{sshkey_no_keys_acct}}</div>');
@@ -3643,7 +3667,7 @@ function show_sshkeys_window() {
 			
 		});
 
-
+		set_ssh_keys_table(data['ssh_keys']);
 		
 	});
 	
@@ -3868,9 +3892,10 @@ function show_cpinstall_window(){
 		if(N['info']['nojson']){
 			$('.cp_notice').text('{{cpan_no_file}}');
 		}
+		return true;
 	}
 	
-	$.each($panels, function(i, v) {
+	$.each($panels_avail, function(i, v) {
 		$('#'+v).show();
 	});
 	
@@ -6551,6 +6576,10 @@ function send_passcode(){
 	call('[[API]]'+'act=twofactauth&email_passcode=1');
 }
 
+function show_rdns(){
+	loadpage('act=rdns');
+}
+
 // rDNS Wizard
 function rdns_onload(){
 
@@ -6626,37 +6655,41 @@ function rdns_onload(){
 
 	$("#rdns_ip").html(txt.join(''));
 
-	if(N["rdns_records"] == null){
-		$("#no_rdns").show();
-		$('#records-rdns .pagination-top, #records-rdns .pagination-bottom').hide();
-		return false;
-	}
-
-	var cols = new Object();
-	cols["id"] = {"l" : '{{id}}', "width": '30px'};
-	cols["ip"] = {"l" : '{{ip}}'};
-	cols["name"] = {"l" : '{{name}}'};
-	cols["content"] = {"l" : '{{domain}}'};
-	cols["delete"] = {"l" : ''};
-
-	pageNum = getParameterByName('page', 1);
-	pageNum = empty(pageNum) ? 1 : pageNum;
-
-	// Prepare the list
-	let inc_counter = ((pageNum - 1) * 50) + 1;
-	for(x in N["rdns_records"]){
-		$v = N["rdns_records"][x];
-		N["rdns_records"][x]["delete"] = '<a href="javascript:delrdns(\''+x+'\')" ><i class="far fa-trash-alt delete-icon fa-1x"></i></a>';
-		if(x.includes('id')){
-			N["rdns_records"][x]["delete"] = 'NA';
+	AJAX('[[API]]act=rdns', function(data) {
+	
+		if(data["rdns_records"] == null){
+			$("#no_rdns").show();
+			$('#records-rdns .pagination-top, #records-rdns .pagination-bottom').hide();
+			return false;
 		}
-		N["rdns_records"][x]['id'] = inc_counter++;
-	}
 
-	pageLinks("records-rdns", 'act=rdns', N['page']);
+		var cols = new Object();
+		cols["id"] = {"l" : '{{id}}', "width": '30px'};
+		cols["ip"] = {"l" : '{{ip}}'};
+		cols["name"] = {"l" : '{{name}}'};
+		cols["content"] = {"l" : '{{domain}}'};
+		cols["delete"] = {"l" : ''};
 
-	// Form the TABLE
-	drawTable({'id' : 'rdnslist', 'tid' : 'rdnslist_table', "width" : '100%'}, cols, N["rdns_records"]);
+		pageNum = getParameterByName('page', 1);
+		pageNum = empty(pageNum) ? 1 : pageNum;
+
+		// Prepare the list
+		let inc_counter = ((pageNum - 1) * 50) + 1;
+		for(x in data["rdns_records"]){
+			$v = data["rdns_records"][x];
+			data["rdns_records"][x]["delete"] = '<a href="javascript:delrdns(\''+x+'\')" ><i class="far fa-trash-alt delete-icon fa-1x"></i></a>';
+			if(x.includes('id')){
+				data["rdns_records"][x]["delete"] = 'NA';
+			}
+			data["rdns_records"][x]['id'] = inc_counter++;
+		}
+
+		pageLinks("records-rdns", 'act=rdns', data['page']);
+
+		// Form the TABLE
+		drawTable({'id' : 'rdnslist', 'tid' : 'rdnslist_table', "width" : '100%'}, cols, data["rdns_records"]);
+
+	});
 };
 
 // Delete rDNS
@@ -6665,6 +6698,7 @@ function delrdns(id){
 		if(confirm){
 			pageNum = getParameterByName('page', 1);
 			call('[[API]]'+'act=rdns&delete='+id+'&page='+pageNum);
+			rdns_onload();
 		}else{
 			return false;
 		}
@@ -7937,7 +7971,7 @@ function set_ssh_keys_table(ssh_keys) {
 	cols["select_all"] = {'l' : '<input type="checkbox" name="select_all" id="ssh_select_all" class="select_all  virt-checkbox" onchange="checkbox_select_all(this);">', "width" : '5%', "class" : "select-all-checkbox"};
 	
 	var data = [];
-	
+
 	for(var i=0; i<ssh_keys.length; i++) {
 		data[i] = new Array();
 		data[i]['keyid'] = ssh_keys[i]['keyid'];
@@ -8050,75 +8084,76 @@ function euiso_onload() {
 		redirect(N['done']["redirect"]);
 		return;
 	}
-	
-	if(empty(N['isos'])){
-		$('#euisolist').html('<div class="notice">{{euiso_no_iso}}</div>');
-		return;
-	}
-	
-	if($('#iso_list_table').length>0){
-		$('#iso_list_table tr td').eq(2).css({'color':'red'});
-	}
-
-	var cols = new Object();
-	cols["uuid"] = {"l" : '{{uuid}}', "width": '60px'};
-	cols["distro"] = {"l" : '{{euiso_iso_distro}}', "width": '30px'};
-	cols["iso"] = {"l" : '{{euiso_iso_name}}'};
-	cols["size"] = {"l" : '{{euiso_iso_rsize}}'};
-	cols["downloaded"] = {"l" : '{{euiso_iso_size}}'};
-	cols["download_time"] = {"l" : '{{euiso_dwnld_time}}'};
-	cols["active"] = {"l" : '{{euiso_iso_status}}', "width" : '10'};
-	cols["delete"] = {"l" : '{{euiso_iso_del}}', "width" : '10'};
-	cols["select_all"] = {"l" : '<input type="checkbox" name="select_all" id="iso_select_all" class="select_all virt-checkbox" onclick="checkbox_select_all(this);" >', "width" : '5%', 'class' : 'select-all-checkbox'};
-	
-	var is_downloading = 0;
-	
-	// Prepare the list
-	for(x in N["isos"]){
-		$v = N["isos"][x];
-		active = $v['active'];
-		$v['active'] = Math.round(($v['downloaded']/$v['size'])*100) + ' %';
-		$v['size'] = Math.round($v['size'] / 1024 / 1024) + ' MB';
-		$v['downloaded'] = Math.round($v['downloaded'] / 1024 / 1024) + ' MB';
-		$v['download_time'] = $v['download_time'];
-		$v["delete"] = '<a href="javascript:void(0);" onclick="delisokey(\''+x+'\');return false;" class="areload" data-iso=\''+x+'\'><i class="far fa-1x fa-trash-alt danger" title="{{delete}}"></i></a>';
-		$v["select_all"] = '<input type="checkbox" class="ios isorow virt-checkbox" id="iso-checkbox'+[x]+'" name="iso_id[]" value="'+[x]+'" "/>';
-		
-		if(empty(active)){
-			is_downloading = 1;
+	AJAX('[[API]]act=euiso', function(data) {
+		if(empty(data['isos'])){
+			$('#euisolist').html('<div class="notice">{{euiso_no_iso}}</div>');
+			return;
 		}
-	}
+		
+		if($('#iso_list_table').length>0){
+			$('#iso_list_table tr td').eq(2).css({'color':'red'});
+		}
+	
+		var cols = new Object();
+		cols["uuid"] = {"l" : '{{uuid}}', "width": '60px'};
+		cols["distro"] = {"l" : '{{euiso_iso_distro}}', "width": '30px'};
+		cols["iso"] = {"l" : '{{euiso_iso_name}}'};
+		cols["size"] = {"l" : '{{euiso_iso_rsize}}'};
+		cols["downloaded"] = {"l" : '{{euiso_iso_size}}'};
+		cols["download_time"] = {"l" : '{{euiso_dwnld_time}}'};
+		cols["active"] = {"l" : '{{euiso_iso_status}}', "width" : '10'};
+		cols["delete"] = {"l" : '{{euiso_iso_del}}', "width" : '10'};
+		cols["select_all"] = {"l" : '<input type="checkbox" name="select_all" id="iso_select_all" class="select_all virt-checkbox" onclick="checkbox_select_all(this);" >', "width" : '5%', 'class' : 'select-all-checkbox'};
+		
+		var is_downloading = 0;
+		
+		// Prepare the list
+		for(x in data["isos"]){
+			$v = data["isos"][x];
+			active = $v['active'];
+			$v['active'] = Math.round(($v['downloaded']/$v['size'])*100) + ' %';
+			$v['size'] = Math.round($v['size'] / 1024 / 1024) + ' MB';
+			$v['downloaded'] = Math.round($v['downloaded'] / 1024 / 1024) + ' MB';
+			$v['download_time'] = $v['download_time'];
+			$v["delete"] = '<a href="javascript:void(0);" onclick="delisokey(\''+x+'\');return false;" class="areload" data-iso=\''+x+'\'><i class="far fa-1x fa-trash-alt danger" title="{{delete}}"></i></a>';
+			$v["select_all"] = '<input type="checkbox" class="ios isorow virt-checkbox" id="iso-checkbox'+[x]+'" name="iso_id[]" value="'+[x]+'" "/>';
+			
+			if(empty(active)){
+				is_downloading = 1;
+			}
+		}
+	
+		// Form the TABLE
+		drawTable({'id' : 'euisolist', 'tid' : 'iso_list_table'}, cols, data["isos"]);
+		
+		var sel_opts = "<option value='0'>{{lst_with_selected}}</option><option value='1'>{{delete}}</option>";
+		
+		var bottom_menu = `<div class="bottom-go-options py-5 flex justify-end"><div class="flex gap-3 lg:w-96 sm:w-52">
+			<select class="virt-select" name="multi_options" id="iso_options">
+				${sel_opts}
+			</select>
+			<span class="go-option">
+				<input type="button" value="{{go}}" onclick="delisokey();return false;" class="btn justify-content-end align-items-center d-flex" />
+			</span>
+		</div></div>`;
+		
+		bottom_menu += '<div class="text-center mt-3">';
+		
+		if("euiso_auto_del" in data){
+			bottom_menu += '<div class="notice">'+N['euiso_auto_del']+'</div>';
+		}
 
-	// Form the TABLE
-	drawTable({'id' : 'euisolist', 'tid' : 'iso_list_table'}, cols, N["isos"]);
-	
-	var sel_opts = "<option value='0'>{{lst_with_selected}}</option><option value='1'>{{delete}}</option>";
-	
-	var bottom_menu = `<div class="bottom-go-options py-5 flex justify-end"><div class="flex gap-3 lg:w-96 sm:w-52">
-		<select class="virt-select" name="multi_options" id="iso_options">
-			${sel_opts}
-		</select>
-		<span class="go-option">
-			<input type="button" value="{{go}}" onclick="delisokey();return false;" class="btn justify-content-end align-items-center d-flex" />
-		</span>
-	</div></div>`;
-	
-	bottom_menu += '<div class="text-center mt-3">';
-	
-	if("euiso_auto_del" in N){
-		bottom_menu += '<div class="notice">'+N['euiso_auto_del']+'</div>';
-	}
-	
-	bottom_menu += '</div>';
-	if(!$('#euiso .bottom-go-options').length){
-		$("#euisolist").parent().after(bottom_menu);
-	}
-	
-	// Are there any ISO that are downloading ?
-	if(!empty(is_downloading)){
-		euiso = setTimeout('loadpage("act=euiso")', 30000);
-		is_downloading = 0;
-	}
+		bottom_menu += '</div>';
+		if(!$('#enduser_listiso-tab .bottom-go-options').length){
+			$("#euisolist").parent().after(bottom_menu);
+		}
+
+		// Are there any ISO that are downloading ?
+		if(!empty(is_downloading)){
+			euiso = setTimeout('loadpage("act=euiso")', 30000);
+			is_downloading = 0;
+		}
+	});
 	
 };
 
@@ -10402,18 +10437,18 @@ function Hidedata(){
 			$("#lmload_balancer").removeClass('!hidden');
 		}
 	}
-	
-	if (("enable_eu_iso" in N)) {
-		$('#lmeuiso').removeClass('!hidden');
-	}
 
+	if (("enable_eu_iso" in N)) {
+		$('#lmeuiso, #enduser_iso').removeClass('!hidden');
+	}
+	
 	if(!("disable_webuzo" in N)){
 		$('#lmapps').removeClass('!hidden');
 	}
 	
 	// Are we suppose to show the iso option for HVM?
 	if(!empty(N["info"]) && ("iso_support" in N["info"]["flags"]) && (N["info"]["flags"]["iso_support"] <= 0)){
-		$('#lmeuiso').addClass('!hidden');
+		$('#lmeuiso, #enduser_iso').addClass('!hidden');
 	}
 
 	// Does this user have access to backup servers ?
@@ -11120,12 +11155,12 @@ function show_webuzo_window(){
 		}
 		
 		if("isfree" in data){			
-			$("#stack2_tr, #stack3_tr").hide();
-			$("#stack1").prop("checked", true).data("demo", "1");
+			$("#lemp, #llmp").hide();
+			$(".stack_tr").hide();
 		}else{
-			$("#stack2_tr, #stack3_tr").show();
-			$("#webuzo_stack_tr").slideDown("slow");
-			$("#stack1").data("demo", "0");
+			$("#lemp, #llmp").show();
+			$(".stack_tr").show();
+			$(".stack_tr").slideDown("slow");
 		}
 		
 		var options = '<option value="0">{{li_none}}</option>';
@@ -13151,93 +13186,97 @@ function edit_firewallplan_tab(fwpid){
 		return false;
 	}
 	$("#editfirewallform")[0].reset();
-	let protocol_firewall = N['protocol'];
-	let options = "";
+	AJAX('[[API]]act=editfirewallplan&fwpid='+fwpid, function(data) {
+		let protocol_firewall = data['protocol'];
 
-	for(key in protocol_firewall) {
-		if (protocol_firewall.hasOwnProperty(key)) {
-			let val = protocol_firewall[key];
-			options += '<option value="'+ val +'">'+ val +'</otion>';
-		}
-	}
+		let options = "";
 
-	$('#edit_fwp_name').val(N["firewall_plans"][fwpid]["fw_plan_name"]);
-	$('#edit_default_policy').val(N["firewall_plans"][fwpid]["default_policy"]);
-	$('#edit_protocol_firewall').html(options);
-	$('#edit_protocol_firewall').select2();
-	$('#firewall_plan_id').val(N["firewall_plans"][fwpid]['fwid']);
-	
-	if (!$.fn.DataTable.isDataTable( "#edit_managerules")) {
-
-		$("#edit_managerules").DataTable({
-			sorting :false,
-			paging: false,
-			info: false,
-			ordering : false,
-			searching : false,
-			"language": {
-				"emptyTable": "{{fw_no_rules_added}}"
-			},
-			"fnDrawCallback" : function(){
-
-				rows = $("#edit_managerules").DataTable().rows().nodes();
-				rows_length = rows.length;
-				
-				if(!empty(rows_length)){
-
-					$.each(rows, function(index){
-						$("td:first", this).html(index + 1);
-					});
-
-					$("#firewall_reset").show();
-	
-				}else{
-					$("#firewall_reset").hide();
-				}
-	
+		for(key in protocol_firewall) {
+			if (protocol_firewall.hasOwnProperty(key)) {
+				let val = protocol_firewall[key];
+				options += '<option value="'+ val +'">'+ val +'</otion>';
 			}
-		});
-	
-	}else{
-		$("#edit_managerules").DataTable().clear().draw();
-	}
-
-	let firewall_rules = JSON.parse(N["firewall_plans"][fwpid]["rules"]);
-	let firewallplan_table = $("#edit_managerules").DataTable();
-	firewallplan_table.clear().draw();
-
-	if(empty(firewall_rules)){
-		return false;
-	}
-
-	firewall_rules.forEach(function(v){
-		let tmp_rule = v.split(" ");
-		let direction_val = direction_display = tmp_rule[1];
-		let decision_val = decision_display = tmp_rule[2];
-		let ipversion = tmp_rule[0];
-		let iptype = '';
-
-		if(ipversion == 4){
-			iptype = 'IPv4';
 		}
 
-		let protocol_val = protocol_display = tmp_rule[3];
-		let sport_val = tmp_rule[4];
-		let dport_val = tmp_rule[5];
-		let src_addr = tmp_rule[6];
+		$('#edit_fwp_name').val(data["firewall_plans"]["fw_plan_name"]);
+		$('#edit_default_policy').val(data["firewall_plans"]["default_policy"]);
+		$('#edit_protocol_firewall').html(options);
+		$('#edit_protocol_firewall').select2();
+		$('#firewall_plan_id').val(data["firewall_plans"]['fwid']);
+		
+		if (!$.fn.DataTable.isDataTable( "#edit_managerules")) {
 
-		firewallplan_table.row.add(
-			["",
-			"<input type=\"hidden\" name=\"direction[]\" value=\""+direction_val+"\" />"+direction_display, 
-			"<input type=\"hidden\" name=\"iptype[]\" value=\""+ipversion+"\" />"+iptype,
-			"<input type=\"hidden\" name=\"decision[]\" value=\""+decision_val+"\" />"+decision_display,
-			"<input type=\"hidden\" name=\"protocol[]\" value=\""+protocol_val+"\" />"+protocol_display, 
-			"<input type=\"hidden\" name=\"sport[]\" value=\""+sport_val+"\" />"+sport_val,
-			"<input type=\"hidden\" name=\"dport[]\" value=\""+dport_val+"\" />"+dport_val, 
-			"<input type=\"hidden\" name=\"source_addr[]\" value=\""+src_addr+"\" />"+src_addr, 
-			"<i class=\"fa fa-trash-alt delete-icon\" onclick=\"delete_rule(this,1);\"></i>"]
-		).draw();
-	});
+			$("#edit_managerules").DataTable({
+				sorting :false,
+				paging: false,
+				info: false,
+				ordering : false,
+				searching : false,
+				"language": {
+					"emptyTable": "{{fw_no_rules_added}}"
+				},
+				"fnDrawCallback" : function(){
+
+					rows = $("#edit_managerules").DataTable().rows().nodes();
+					rows_length = rows.length;
+					
+					if(!empty(rows_length)){
+
+						$.each(rows, function(index){
+							$("td:first", this).html(index + 1);
+						});
+
+						$("#firewall_reset").show();
+		
+					}else{
+						$("#firewall_reset").hide();
+					}
+		
+				}
+			});
+		
+		}else{
+			$("#edit_managerules").DataTable().clear().draw();
+		}
+	
+		let firewall_rules = JSON.parse(data["firewall_plans"]["rules"]);
+		let firewallplan_table = $("#edit_managerules").DataTable();
+		firewallplan_table.clear().draw();
+
+		if(empty(firewall_rules)){
+			return false;
+		}
+
+		firewall_rules.forEach(function(v){
+			let tmp_rule = v.split(" ");
+			let direction_val = direction_display = tmp_rule[1];
+			let decision_val = decision_display = tmp_rule[2];
+			let ipversion = tmp_rule[0];
+			let iptype = '';
+
+			if(ipversion == 4){
+				iptype = 'IPv4';
+			}
+
+			let protocol_val = protocol_display = tmp_rule[3];
+			let sport_val = tmp_rule[4];
+			let dport_val = tmp_rule[5];
+			let src_addr = tmp_rule[6];
+
+			firewallplan_table.row.add(
+				["",
+				"<input type=\"hidden\" name=\"direction[]\" value=\""+direction_val+"\" />"+direction_display, 
+				"<input type=\"hidden\" name=\"iptype[]\" value=\""+ipversion+"\" />"+iptype,
+				"<input type=\"hidden\" name=\"decision[]\" value=\""+decision_val+"\" />"+decision_display,
+				"<input type=\"hidden\" name=\"protocol[]\" value=\""+protocol_val+"\" />"+protocol_display, 
+				"<input type=\"hidden\" name=\"sport[]\" value=\""+sport_val+"\" />"+sport_val,
+				"<input type=\"hidden\" name=\"dport[]\" value=\""+dport_val+"\" />"+dport_val, 
+				"<input type=\"hidden\" name=\"source_addr[]\" value=\""+src_addr+"\" />"+src_addr, 
+				"<i class=\"fa fa-trash-alt delete-icon\" onclick=\"delete_rule(this,1);\"></i>"]
+			).draw();
+		});
+
+	})
 }
 
 function firewallplan_go_click() {

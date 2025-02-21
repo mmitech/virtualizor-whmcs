@@ -1,7 +1,7 @@
 <?php
 
-// Last Updated : 23/08/2024
-// Version : 2.8.0
+// Last Updated : 14/02/2025
+// Version : 2.8.6
 
 // Disable warning messages - in PHP 5.4
 //error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
@@ -413,6 +413,10 @@ function virtualizor_CreateAccount($params) {
 		if(!empty($params['configoptions'])){
 			foreach($params['configoptions'] as $k => $v){
 
+				if(!isset($post[$k])){
+					$post[$k] = $v;
+				}
+
 				if($k == 'bandwidth' && $v == -1){
 					unset($post[$k]);
 					continue;
@@ -422,12 +426,13 @@ function virtualizor_CreateAccount($params) {
 					$post['additional_ram'] = ($v * 1024);
 				}
 
-				if(!isset($post[$k])){
-					$post[$k] = $v;
-				}
 			}
 		}
 		
+		if(!empty($virtualizor_conf['disable_setup_wizard'])){
+			$post['disable_setup_wizard'] = 1;
+		}
+
 		// Any custom code ?
 		if(file_exists(dirname(__FILE__).'/custom.php')){
 			include_once(dirname(__FILE__).'/custom.php');
@@ -1080,6 +1085,10 @@ function virtualizor_CreateAccount($params) {
 		if(!empty($params['configoptions'])){
 			foreach($params['configoptions'] as $k => $v){
 
+				if(!isset($post[$k])){
+					$post[$k] = $v;
+				}
+
 				if($k == 'bandwidth' && $v == -1){
 					unset($post[$k]);
 					continue;
@@ -1089,9 +1098,6 @@ function virtualizor_CreateAccount($params) {
 					$post['additional_ram'] = ($v * 1024);
 				}
 
-				if(!isset($post[$k])){
-					$post[$k] = $v;
-				}
 			}
 		}
 		
@@ -1496,6 +1502,10 @@ function virtualizor_ChangePassword($params) {
 	if(!empty($params['configoptions'])){
 
 		foreach($params['configoptions'] as $k => $v){
+
+			if(!isset($post_vps[$k])){
+				$post_vps[$k] = $v;
+			}
 			
 			if($k == 'bandwidth' && $v == -1){
 				unset($post_vps[$k]);
@@ -1503,12 +1513,9 @@ function virtualizor_ChangePassword($params) {
 			}
 
 			if($k == 'additional_ram' && !empty($v) && !empty($virtualizor_conf['ram_in_gb'])){
-				$post['additional_ram'] = ($v * 1024);
+				$post_vps['additional_ram'] = ($v * 1024);
 			}
 
-			if(!isset($post_vps[$k])){
-				$post_vps[$k] = $v;
-			}
 		}
 		
 	}
@@ -1673,18 +1680,19 @@ function virtualizor_ChangePackage($params) {
 		if(!empty($params['configoptions'])){
 			foreach($params['configoptions'] as $k => $v){
 
+				if(!isset($post_vps[$k])){
+					$post_vps[$k] = $v;
+				}
+
 				if($k == 'bandwidth' && $v == -1){
 					unset($post_vps[$k]);
 					continue;
 				}
 
 				if($k == 'additional_ram' && !empty($v) && !empty($virtualizor_conf['ram_in_gb'])){
-					$post['additional_ram'] = ($v * 1024);
+					$post_vps['additional_ram'] = ($v * 1024);
 				}
 
-				if(!isset($post_vps[$k])){
-					$post_vps[$k] = $v;
-				}
 			}
 		}
 	
@@ -1952,18 +1960,19 @@ function virtualizor_ChangePackage($params) {
 		if(!empty($params['configoptions'])){
 			foreach($params['configoptions'] as $k => $v){
 
+				if(!isset($post_vps[$k])){
+					$post_vps[$k] = $v;
+				}
+
 				if($k == 'bandwidth' && $v == -1){
 					unset($post_vps[$k]);
 					continue;
 				}
 
 				if($k == 'additional_ram' && !empty($v) && !empty($virtualizor_conf['ram_in_gb'])){
-					$post['additional_ram'] = ($v * 1024);
+					$post_vps['additional_ram'] = ($v * 1024);
 				}
 
-				if(!isset($post_vps[$k])){
-					$post_vps[$k] = $v;
-				}
 			}
 		}
 		
@@ -2543,10 +2552,11 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 		$var['giver'] = $url_prefix.'&id='.$params['serviceid'].'&';
 		$var['url'] = $url_prefix.'&id='.$params['serviceid'].'&';
 		$var['copyright'] = 'Virtualizor';
-		$var['version'] = '2.8.0';
+		$var['version'] = '2.8.6';
 		$var['logo'] = '';
 		$var['mob_logo'] = '';
 		$var['login_logo'] = '';
+		$var['favicon_url'] = '';
 		$var['theme'] = $modules_url.'/virtualizor/ui/';
 		$var['theme_path'] = dirname(__FILE__).'/ui/';
 		$var['images'] = $var['theme'].'images/';
@@ -2625,16 +2635,12 @@ function virtualizor_newUI($params, $url_prefix = 'clientarea.php?action=product
 			// Read the file
 			$data = '';
 			$jspath = $var['theme_path'].'css2/';
-			$files = array('bootstrap.min.css',
-							'./fonts/inter/inter.css',
-							'flowbite.min.css',
+			$files = array('./fonts/inter/inter.css',
 							'tailwind.css',
 							'apexcharts.css',
 							'all.min.css',
-							'jquery.dataTables.min.css',
-							'select2.css',
 							'jquery.scrollbar.css',
-							'billing.css',
+							'select2.css',
 			);
 			$files['style'] = 'style.css';
 			

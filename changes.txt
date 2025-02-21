@@ -1,10 +1,11 @@
+[2.8.2][23-09-2024]
+- Disable firewall setting was not hiding firewall option from enduser.
+
 [2.8.0][09-09-2024]
-- Added serid field once the VM is created.
-- Updated for MMITech
+- Updated module with new UI.
 
 [2.7.2][05-03-2024]
 - Added serid field once the VM is created.
-- Updated for MMITech
 
 [2.7.0][07-12-2023]
 - RDNS entries were not getting deleted. This is fixed.
